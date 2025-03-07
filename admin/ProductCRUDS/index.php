@@ -30,14 +30,16 @@ if (isset($_SESSION['user_id'])) {
     <div class="d-flex">
         <div id="sidebar">
             <button class="btn text-white sidebarHeaderbutton">Eleca Shop</button>
+            <a href=""><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\man.png" alt=""
+            class="me-1"> Users</button></a>
+            <a href="../CategoryCRUDS\index.php"> <button class="btn CustomSidebarButtons text-white"><img
+            src="../flaticon\categories.png" alt="" class="me-1"> Categories</button></a>
             <a href="#">
                 <button class="btn CustomSidebarButtons text-white"><img src="../flaticon\product.png" alt="" class="me-1">
                     Products</button>
             </a>
-            <a href="../CategoryCRUDS\index.php"> <button class="btn CustomSidebarButtons text-white"><img
-                        src="../flaticon\categories.png" alt="" class="me-1"> Categories</button></a>
-            <a href=""><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\man.png" alt=""
-                        class="me-1"> Users</button></a>
+          
+           
             <a href=""><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\coupon.png" alt=""
                         class="me-1"> Coupons</button></a>
             <a href="../OrderRU/index.php"><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\received.png" alt=""

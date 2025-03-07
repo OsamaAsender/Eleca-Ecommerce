@@ -30,15 +30,13 @@ if (isset($_SESSION['user_id'])) {
     <div class="d-flex">
         <div id="sidebar">
             <button class="btn text-white sidebarHeaderbutton">Eleca Shop</button>
-            <a href="../ProductCRUDS/index.php">
-                <button class="btn CustomSidebarButtons text-white"><img src="../flaticon\product.png" alt=""
-                        class="me-1">
-                    Products</button>
-            </a>
-            <a href="../CategoryCRUDS/index.php"> <button class="btn CustomSidebarButtons text-white"><img
-                        src="../flaticon\categories.png" alt="" class="me-1"> Categories</button></a>
             <a href=""><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\man.png" alt=""
                         class="me-1"> Users</button></a>
+            <a href="../CategoryCRUDS/index.php"> <button class="btn CustomSidebarButtons text-white"><img
+                        src="../flaticon\categories.png" alt="" class="me-1"> Categories</button></a>
+            <a href="../ProductCRUDS/index.php">
+                <button class="btn CustomSidebarButtons text-white"><img src="../flaticon\product.png" alt=""
+                        class="me-1"> Products</button></a>
             <a href=""><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\coupon.png" alt=""
                         class="me-1"> Coupons</button></a>
             <a href="#"><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\received.png" alt=""
@@ -101,56 +99,59 @@ if (isset($_SESSION['user_id'])) {
 
             include('../components/connect.php');
 
-            if (isset($_GET['message']))     {
+            if (isset($_GET['message'])) {
                 echo "<div style='background-color:green'> {$_GET['message']}</div>";
             }
             ?>
 
 
-<?php
+            <?php
 
-include '../components/connect.php';
+            include '../components/connect.php';
 
-// Fetch orders from database using PDO
-$query = "SELECT o.id, u.name AS user_name, o.total_price, o.status, c.name AS coupon_name FROM `order` o
+            // Fetch orders from database using PDO
+            $query = "SELECT o.id, u.name AS user_name, o.total_price, o.status, c.name AS coupon_name FROM `order` o
           LEFT JOIN `user` u ON o.user_id = u.id
           LEFT JOIN `coupon` c ON o.coupon_id = c.id
           ORDER BY o.id DESC";
-$stmt = $conn->prepare($query);
-$stmt->execute();
-$orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
-?>
-    <div class="container mt-5">
-        <h2 class="mb-4">Orders Management</h2>
-        <table class="table table-bordered table-striped table-hover">
-            <thead class="">
-                <tr>
-                    <th class="text-center">ID</th>
-                    <th class="text-center">User</th>
-                    <th class="text-center">Total Price</th>
-                    <th class="text-center">Status</th>
-                    <th class="text-center">Coupon</th>
-                    <th class="text-center">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($orders as $row) : ?>
-                    <tr>
-                        <td class="text-center"><?= $row['id'] ?></td>
-                        <td class="text-center"><?= htmlspecialchars($row['user_name']) ?></td>
-                        <td class="text-center">$<?= number_format($row['total_price'], 2) ?></td>
-                        <td class="text-center"><?= ucfirst($row['status']) ?></td>
-                        <td class="text-center"><?= $row['coupon_name'] ? htmlspecialchars($row['coupon_name']) : 'N/A' ?></td>
-                        <td class="text-center">
-                            <a href="edit_order.php?id=<?= $row['id'] ?>" class="btn btn-success btn-sm"> <i class="fa-solid fa-pen-to-square"></i> Edit</a>
-                            |
-                            <a href="update_order.php?id=<?= $row['id'] ?>" class="btn btn-danger btn-sm"><i class='fa-solid fa-trash'></i> Delete</a>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
+            $stmt = $conn->prepare($query);
+            $stmt->execute();
+            $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            ?>
+            <div class="container mt-5">
+                <h2 class="mb-4">Orders Management</h2>
+                <table class="table table-bordered table-striped table-hover">
+                    <thead class="">
+                        <tr>
+                            <th class="text-center">ID</th>
+                            <th class="text-center">User</th>
+                            <th class="text-center">Total Price</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Coupon</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($orders as $row): ?>
+                            <tr>
+                                <td class="text-center"><?= $row['id'] ?></td>
+                                <td class="text-center"><?= htmlspecialchars($row['user_name']) ?></td>
+                                <td class="text-center">$<?= number_format($row['total_price'], 2) ?></td>
+                                <td class="text-center"><?= ucfirst($row['status']) ?></td>
+                                <td class="text-center">
+                                    <?= $row['coupon_name'] ? htmlspecialchars($row['coupon_name']) : 'N/A' ?></td>
+                                <td class="text-center">
+                                    <a href="edit_order.php?id=<?= $row['id'] ?>" class="btn btn-success btn-sm"> <i
+                                            class="fa-solid fa-pen-to-square"></i> Edit</a>
+                                    |
+                                    <a href="update_order.php?id=<?= $row['id'] ?>" class="btn btn-danger btn-sm"><i
+                                            class='fa-solid fa-trash'></i> Delete</a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
 
         </div>
     </div>
