@@ -30,7 +30,7 @@ if (isset($_SESSION['user_id'])) {
     <div class="d-flex">
         <div id="sidebar">
             <button class="btn text-white sidebarHeaderbutton">Eleca Shop</button>
-            <a href=""><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\man.png" alt=""
+            <a href="../UserCRUDS/index.php"><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\man.png" alt=""
             class="me-1"> Users</button></a>
             <a href="../CategoryCRUDS\index.php"> <button class="btn CustomSidebarButtons text-white"><img
             src="../flaticon\categories.png" alt="" class="me-1"> Categories</button></a>
@@ -62,10 +62,6 @@ if (isset($_SESSION['user_id'])) {
 
                     <div class="me-5 pe-4">
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
-                            <li class="mx-3 pt-2"> <a href="#"><img src="../flaticon/notification.png" alt="asdfsadf"></a></li>
-
-                            <li class="mx-3 pt-2"><a href="#"><a href="#"><img src="../flaticon/envelope.png" alt="asdfsadf"></a></li>
 
                             <li class="nav-item dropdown">
                                 <a class="nav-link " href="#" role="button" data-bs-toggle="dropdown">
