@@ -1,0 +1,119 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* Coupon Details Container */
+.coupon-details {
+   display: flex;
+   flex-direction: column;
+   margin-top: 20px;
+}
+
+.coupon-details .coupon {
+   display: flex;
+   justify-content: space-between;
+   padding: 15px;
+   margin-bottom: 15px;
+   border: 1px solid #e0e0e0;
+   border-radius: 8px;
+   background-color: #fff;
+   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+   width: 100%;
+   max-width: 100%;
+   flex-wrap: wrap; /* Allow content to wrap inside the card */
+   overflow: hidden; /* Prevent overflow */
+}
+
+.coupon-details .coupon h4 {
+   font-size: 20px;
+   font-weight: 600;
+   color: #333;
+   margin-bottom: 10px;
+}
+
+.coupon-details .coupon p {
+   font-size: 16px;
+   color: #666;
+   margin-bottom: 10px;
+   flex-grow: 1; /* Allow the description to take available space */
+}
+
+.coupon-details .coupon .status {
+   font-weight: bold;
+   color: #28a745; /* Default active status color */
+   margin-top: 5px;
+}
+
+.coupon-details .coupon .status.inactive {
+   color: #dc3545; /* Inactive status color */
+}
+
+.coupon-details .coupon .actions {
+   display: flex;
+   align-items: center;
+   gap: 15px;
+   margin-top: 10px;
+}
+
+.coupon-details .coupon .actions a {
+   background-color: #007bff;
+   color: white;
+   padding: 8px 16px;
+   border-radius: 8px;
+   text-decoration: none;
+   transition: background-color 0.3s ease-in-out;
+}
+
+.coupon-details .coupon .actions a:hover {
+   background-color: #0056b3;
+}
+
+/* Ensure content fits properly within cards and doesn't overflow */
+.coupon-details .coupon .content {
+   width: 100%;
+   max-width: 100%;
+   overflow: hidden; /* Prevent overflowing content */
+   text-overflow: ellipsis; /* Add ellipsis for overflow text */
+   white-space: nowrap; /* Ensure text stays on one line if it overflows */
+   flex-grow: 1; /* Let content take up space but not overflow */
+}
+
+/* Coupon Details Responsive Styles */
+@media (max-width: 768px) {
+   .coupon-details .coupon {
+      flex-direction: column; /* Stack content vertically on smaller screens */
+      align-items: flex-start; /* Align items at the start */
+   }
+
+   .coupon-details .coupon .actions {
+      width: 100%;
+      justify-content: space-between; /* Adjust button positioning */
+   }
+
+   .coupon-details .coupon .content {
+      white-space: normal; /* Allow text to wrap on smaller screens */
+   }
+
+   table th,
+   table td {
+      font-size: 14px;
+   }
+}
+
+@media (max-width: 480px) {
+   .coupon-details .coupon .content {
+      font-size: 14px; /* Smaller font size for mobile screens */
+   }
+
+   .coupon-details .coupon h4 {
+      font-size: 18px;
+   }
+}

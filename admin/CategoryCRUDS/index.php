@@ -29,7 +29,7 @@ if (isset($_SESSION['user_id'])) {
 <body>
     <div class="d-flex">
         <div id="sidebar">
-            <button class="btn text-white sidebarHeaderbutton">Eleca Shop</button>
+            <button class="btn text-white sidebarHeaderbutton">Dashboard</button>
             <a href="../UserCRUDS/index.php"><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\man.png" alt=""
             class="me-1"> Users</button></a>
             <a href="#"> <button class="btn CustomSidebarButtons text-white"><img
@@ -41,7 +41,7 @@ if (isset($_SESSION['user_id'])) {
             </a>
          
            
-            <a href=""><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\coupon.png" alt=""
+            <a href="../CouponCRUDS"><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\coupon.png" alt=""
                         class="me-1"> Coupons</button></a>
             <a href="../OrderRU/index.php"><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\received.png" alt=""
                         class="me-1"> Orders</button></a>
@@ -60,7 +60,6 @@ if (isset($_SESSION['user_id'])) {
                         </form>
                     </div>
 
-
                     <div class="me-5 pe-4">
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
@@ -69,14 +68,12 @@ if (isset($_SESSION['user_id'])) {
                                     <img src="../flaticon/profile.png" alt="asdfsadf">
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#"><i class="fa-solid fa-user"></i> Profile</a>
-                                    </li>
-                                    <li><a class="dropdown-item" href="#"><i class="fa-solid fa-gear"></i> Settings</a>
+                                    <li><a class="dropdown-item" href=""><i class="fa-solid fa-user"></i> Profile</a>
                                     </li>
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
-                                    <li><a class="dropdown-item" href="#"><i class="fa-solid fa-right-from-bracket"></i>
+                                    <li><a class="dropdown-item" href="../components/logout.php"><i class="fa-solid fa-right-from-bracket"></i>
                                             Log out</a></li>
                                 </ul>
                             </li>
@@ -87,9 +84,9 @@ if (isset($_SESSION['user_id'])) {
                 </div>
 
             </nav>
+            
 
             <?php
-
             include('db_connection/conn.php');
 
             if (isset($_GET['message'])) {
@@ -113,11 +110,11 @@ if (isset($_SESSION['user_id'])) {
                         </button>
                     </div>
 
-                    <table class="table table-striped table-hover table-bordered ">
+                    <table class="table table-striped table-hover ">
                         <thead>
                             <tr>
                                 <!-- <th scope="col">id</th> -->
-                                <th scope="col" class="text-center">id</th>
+                                <th scope="col" class="text-center">Id</th>
                                 <th scope="col" class="text-center">name</th>
                                 <th scope="col" class="text-center">image</th>
                                 <th class="text-center">Action</th>
@@ -138,7 +135,7 @@ if (isset($_SESSION['user_id'])) {
                     </div>
                   </td>
                   <td class='text-center'>
-                  <a href='./update_data/update_page.php?id={$category['id']}' class='btn btn-sm btn-success'><i class='fa-solid fa-pen-to-square'></i> Edit</a>
+                  <a href='./update_data/update_page.php?id={$category['id']}' class='btn btn-sm btn-primary'><i class='fa-solid fa-pen-to-square'></i> Edit</a>
                   |
                   <a href='./delete_data/delete_page.php?id={$category['id']}' class='btn btn-sm btn-danger'><i class='fa-solid fa-trash'></i> Delete</a>
                   </td>
@@ -156,7 +153,7 @@ if (isset($_SESSION['user_id'])) {
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">New category</h5>
+                                <h5 class="modal-title" id="exampleModalLabel">New Category</h5>
                                 <!-- FIX: Bootstrap 5 requires 'btn-close' instead of 'close' -->
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
@@ -186,8 +183,10 @@ if (isset($_SESSION['user_id'])) {
                 </div>
             </main>
 
+</div>
+</div>
 
-            <?php
-            include('./assets/footer.php');
-
-            ?>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
+    

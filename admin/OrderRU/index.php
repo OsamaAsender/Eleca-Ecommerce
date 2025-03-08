@@ -29,7 +29,7 @@ if (isset($_SESSION['user_id'])) {
 <body>
     <div class="d-flex">
         <div id="sidebar">
-            <button class="btn text-white sidebarHeaderbutton">Eleca Shop</button>
+            <button class="btn text-white sidebarHeaderbutton">Dashboard</button>
             <a href="../UserCRUDS/index.php"><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\man.png" alt=""
                         class="me-1"> Users</button></a>
             <a href="../CategoryCRUDS/index.php"> <button class="btn CustomSidebarButtons text-white"><img
@@ -37,7 +37,7 @@ if (isset($_SESSION['user_id'])) {
             <a href="../ProductCRUDS/index.php">
                 <button class="btn CustomSidebarButtons text-white"><img src="../flaticon\product.png" alt=""
                         class="me-1"> Products</button></a>
-            <a href=""><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\coupon.png" alt=""
+            <a href="../CouponCRUDS/index.php"><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\coupon.png" alt=""
                         class="me-1"> Coupons</button></a>
             <a href="#"><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\received.png" alt=""
                         class="me-1"> Orders</button></a>
@@ -66,9 +66,6 @@ if (isset($_SESSION['user_id'])) {
                                 <ul class="dropdown-menu">
                                     <li>
                                         <a class="dropdown-item" href="#"><i class="fa-solid fa-user"></i> Profile</a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="#"><i class="fa-solid fa-gear"></i> Settings</a>
                                     </li>
                                     <li>
                                         <hr class="dropdown-divider">
@@ -113,10 +110,10 @@ if (isset($_SESSION['user_id'])) {
             ?>
             <div class="container mt-5">
                 <h2 class="mb-4">Orders Management</h2>
-                <table class="table table-bordered table-striped table-hover">
+                <table class="table  table-striped table-hover">
                     <thead class="">
                         <tr>
-                            <th class="text-center">ID</th>
+                            <th class="text-center">Id</th>
                             <th class="text-center">User</th>
                             <th class="text-center">Total Price</th>
                             <th class="text-center">Status</th>
@@ -148,6 +145,9 @@ if (isset($_SESSION['user_id'])) {
 
         </div>
     </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 
 </html>
