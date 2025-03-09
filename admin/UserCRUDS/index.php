@@ -1,57 +1,59 @@
 <?php
-
 session_start();
+include('db_connection/conn.php');
 
 $admin_id = $_SESSION['admin_id'] ?? null;
 
-// if (!$admin_id) {
-//     header('location:admin_login.php');
-//     exit();
-// }
-
-
-// <th scope="col" class="text-center">Id</th>
-// <th scope="col" class="text-center">Name</th>
-// <th scope="col" class="text-center">Password</th>
-// <th scope="col" class="text-center">Email</th>   
-// <th scope="col" class="text-center">Password</th>   
-// <th scope="col" class="text-center">Phonenumber</th>   
-// <th scope="col" class="text-center">Address</th>   
-// <th scope="col" class="text-center">Profile Image</th>
-
-
-// Handle Add User
-
-
-
+if($admin_id){
+        
+}
 
 // Handle Update User
 if (isset($_POST['update_user'])) {
     $user_id = $_POST['user_id'];
-    $username = $_POST['username'];
-    $email = $_POST['email'];
-    $password = $_POST['password'];
+    $username = $_POST['user_name'];
+    $email = $_POST['user_email'];
+    $password = $_POST['user_pwd'];
+    $phone = $_POST['user_phone'];
+    $address = $_POST['user_address'];
+    $role = $_POST['user_role'];
 
-    if (!empty($password)) {
-        $password = password_hash($password, PASSWORD_DEFAULT);
-        $update_user = $conn->prepare("UPDATE `user` SET name = ?, email = ?, password = ? WHERE id = ?");
-        $update_user->execute([$username, $email, $password, $user_id]);
-    } else {
-        $update_user = $conn->prepare("UPDATE `user` SET name = ?, email = ? WHERE id = ?");
-        $update_user->execute([$username, $email, $user_id]);
+    try {
+        if (!empty($password)) {
+            $hashed_pwd = password_hash($password, PASSWORD_DEFAULT);
+            $update_user = $conn->prepare("UPDATE `user` SET name=?, email=?, password=?, phone_number=?, address=?, role=? WHERE id=?");
+            $update_user->execute([$username, $email, $hashed_pwd, $phone, $address, $role, $user_id]);
+        } else {
+            $update_user = $conn->prepare("UPDATE `user` SET name=?, email=?, phone_number=?, address=?, role=? WHERE id=?");
+            $update_user->execute([$username, $email, $phone, $address, $role, $user_id]);
+        }
+        
+        // Redirect with both message and original ID
+        header('Location: ' . $_SERVER['PHP_SELF'] . '?id=' . $user_id . '&message');
+        exit();
+    } catch (PDOException $e) {
+        header('Location: ' . $_SERVER['PHP_SELF'] . '?id=' . $user_id . '&error=Update+failed: ' . urlencode($e->getMessage()));
+        exit();
     }
-    $message = 'User details updated successfully!';
 }
 
 // Handle Delete User
 if (isset($_GET['delete'])) {
     $delete_id = $_GET['delete'];
-    $delete_user = $conn->prepare("DELETE FROM `user` WHERE id = ?");
-    $delete_user->execute([$delete_id]);
-    header('location:users_accounts.php');
+    
+    try {
+        $delete_user = $conn->prepare("DELETE FROM `user` WHERE id = ?");
+        $delete_user->execute([$delete_id]);
+        header('Location: ' . $_SERVER['PHP_SELF'] . '?message=User+deleted+successfully');
+        exit();
+    } catch (PDOException $e) {
+        header('Location: ' . $_SERVER['PHP_SELF'] . '?error=Delete+failed: ' . urlencode($e->getMessage()));
+        exit();
+    }
 }
-
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -74,7 +76,7 @@ if (isset($_GET['delete'])) {
         <div id="sidebar">
             <button class="btn text-white sidebarHeaderbutton">Dashboard</button>
             <a href="../UserCRUDS/index.php"><button class="btn CustomSidebarButtons text-white"><img
-                        src="../flaticon\man.png" alt="" class="me-1"> Users</button></a>
+                        src="../flaticon\man.png" alt="" id="SadminPrio" class="me-1"> Users</button></a>
             <a href="../CategoryCRUDS/index.php"> <button class="btn CustomSidebarButtons text-white"><img
                         src="../flaticon/categories.png" alt="" class="me-1"> Categories</button></a>
             <a href="../ProductCRUDS\index.php">
@@ -88,19 +90,21 @@ if (isset($_GET['delete'])) {
                         class="me-1"> Coupons</button></a>
             <a href="../OrderRU/index.php"><button class="btn CustomSidebarButtons text-white"><img
                         src="../flaticon\received.png" alt="" class="me-1"> Orders</button></a>
-            <a href=""><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\cogwheel.png" alt=""
-                        class="me-1"> Settings</button></a>
+
 
         </div>
         <div class="page-content">
+
+
+
+
+
+
             <nav class="navbar navbar-expand-lg bg-body-tertiary">
                 <div class="container-fluid d-flex justify-content-between">
                     <div class="d-flex">
-                        <button class="btn"><i class="fa-solid fa-bars"></i></button>
-                        <form class="d-flex" role="search">
-                            <input class="form-control me-2" type="search" placeholder="search">
-                            <button class="btn btn-outline-success" type="submit">Search</button>
-                        </form>
+                        <button class="btn fw-bold">ELECA SHOP</button>
+                        
                     </div>
 
 
@@ -112,7 +116,7 @@ if (isset($_GET['delete'])) {
                                     <img src="../flaticon/profile.png" alt="asdfsadf">
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#"><i class="fa-solid fa-user"></i> Profile</a>
+                                    <li><a href='../components/profile.php' class="dropdown-item" href="#"><i class="fa-solid fa-user"></i> Profile</a>
                                     </li>
                                     <li>
                                         <hr class="dropdown-divider">
@@ -189,7 +193,7 @@ if (isset($_GET['delete'])) {
                                     <td class='text-center'>{$user['address']}</td>
                                     <td class='text-center'>{$user['role']}</td>
                                     <td class='text-center'>
-                                        <button type='button' class='btn btn-success btn-sm' data-bs-toggle='modal' data-bs-target='#updateModal' 
+                                        <button type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#updateModal' 
                                             onclick=\"setUpdateModalData(
                                                 {$user['id']}, 
                                                 '{$user['name']}', 
@@ -308,114 +312,84 @@ if (isset($_GET['delete'])) {
 
 
                 <!-- Update Modal -->
-                <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel"
-                    aria-hidden="true">
+                <div class="modal fade" id="updateModal" tabindex="-1">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="updateModalLabel">Edit User Details</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
+                                <h5 class="modal-title">Edit User</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
-                            <div class="modal-body">
-                                <form id="updateForm" action="update_data/update_page.php" method="POST">
-                                    <!-- Hidden field for user ID -->
-                                    <input type="hidden" name="id" id="userId">
-
+                            <form id="updateForm" method="POST">
+                                <div class="modal-body">
+                                    <input type="hidden" name="user_id" id="userId">
                                     <div class="mb-3">
-                                        <label for="user_name" class="form-label">Name:</label>
-                                        <input type="text" class="form-control" id="user_name" name="user_name"
-                                            value="">
+                                        <label class="form-label">Name</label>
+                                        <input type="text" class="form-control" name="user_name" id="updateName" required>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="user_email" class="form-label">Email:</label>
-                                        <input type="email" class="form-control" id="user_email" name="user_email"
-                                            value="">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" class="form-control" name="user_email" id="updateEmail" required>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="user_pwd" class="form-label">Password:</label>
-                                        <input type="password" class="form-control" id="user_pwd" name="user_pwd"
-                                            value="">
+                                        <label class="form-label">Password (leave blank to keep current)</label>
+                                        <input type="password" class="form-control" name="user_pwd" id="updatePassword">
                                     </div>
                                     <div class="mb-3">
-                                        <label for="user_phone" class="form-label">Phone Number:</label>
-                                        <input type="text" class="form-control" id="user_phone" name="user_phone"
-                                            value="">
+                                        <label class="form-label">Phone</label>
+                                        <input type="text" class="form-control" name="user_phone" id="updatePhone" required>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="user_address" class="form-label">Address:</label>
-                                        <input type="text" class="form-control" id="user_address" name="user_address"
-                                        value="">
+                                        <label class="form-label">Address</label>
+                                        <input type="text" class="form-control" name="user_address" id="updateAddress" required>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="user_role" class="form-label">Role:</label>
-                                        <select class="form-control" id="user_role" name="user_role" value="">
+                                        <label class="form-label">Role</label>
+                                        <select class="form-select" name="user_role" id="updateRole">
                                             <option value="user">User</option>
                                             <option value="admin">Admin</option>
                                             <option value="super admin">Super Admin</option>
                                         </select>
                                     </div>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" form="updateForm" class="btn btn-success">Update</button>
-                            </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" name="update_user" class="btn btn-primary">Update</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
-
-
-
-
             </main>
-
         </div>
 
 
 
 
 
-        <script>
-            // Get modal and close button
-            var modal = document.getElementById("editUserModal");
-            var closeBtn = document.getElementsByClassName("close-btn")[0];
+    </div>
 
-            // Close modal on clicking X button
-            closeBtn.onclick = function () {
-                modal.style.display = "none";
+    <script>
+    function setUpdateModalData(id, name, email, phone, address, role) {
+        document.getElementById('userId').value = id;
+        document.getElementById('updateName').value = name;
+        document.getElementById('updateEmail').value = email;
+        document.getElementById('updatePhone').value = phone;
+        document.getElementById('updateAddress').value = address;
+        
+        const roleSelect = document.getElementById('updateRole');
+        for (let option of roleSelect.options) {
+            if (option.value === role) {
+                option.selected = true;
+                break;
             }
+        }
+    }
 
-            // Close modal when clicking outside
-            window.onclick = function (event) {
-                if (event.target == modal) {
-                    modal.style.display = "none";
-                }
-            }
-
-            function setDeleteId(id) {
-                console.log("ID being set:", id); // Logs the ID in the browser's console
-                document.getElementById('deleteId').value = id;
-            }
-
-
-        </script>
-
-        <script src="../../js/admin_script.js"></script>
-<!-- Rest of your index.php code -->
-
-<script>
-    // Function to populate the delete modal with the user ID
     function setDeleteId(id) {
         document.getElementById('deleteId').value = id;
     }
-</script>
+    </script>
 
-
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-            crossorigin="anonymous"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

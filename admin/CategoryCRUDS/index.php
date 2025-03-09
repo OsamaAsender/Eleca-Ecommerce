@@ -45,19 +45,13 @@ if (isset($_SESSION['user_id'])) {
                         class="me-1"> Coupons</button></a>
             <a href="../OrderRU/index.php"><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\received.png" alt=""
                         class="me-1"> Orders</button></a>
-            <a href=""><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\cogwheel.png" alt=""
-                        class="me-1"> Settings</button></a>
 
         </div>
         <div class="page-content">
             <nav class="navbar navbar-expand-lg bg-body-tertiary">
                 <div class="container-fluid d-flex justify-content-between">
-                    <div class="d-flex">
-                        <button class="btn"><i class="fa-solid fa-bars"></i></button>
-                        <form class="d-flex" role="search">
-                            <input class="form-control me-2" type="search" placeholder="search">
-                            <button class="btn btn-outline-success" type="submit">Search</button>
-                        </form>
+                    <div class="">
+                        <button class="btn fw-bold">ELECA SHOP</button>
                     </div>
 
                     <div class="me-5 pe-4">
@@ -68,12 +62,12 @@ if (isset($_SESSION['user_id'])) {
                                     <img src="../flaticon/profile.png" alt="asdfsadf">
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href=""><i class="fa-solid fa-user"></i> Profile</a>
+                                    <li><a href="../components/profile.php" class="dropdown-item" href=""> Profile</a>
                                     </li>
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
-                                    <li><a class="dropdown-item" href="../components/logout.php"><i class="fa-solid fa-right-from-bracket"></i>
+                                    <li><a class="dropdown-item" href="../components/logout.php">
                                             Log out</a></li>
                                 </ul>
                             </li>

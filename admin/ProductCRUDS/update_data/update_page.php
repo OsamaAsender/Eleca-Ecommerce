@@ -67,7 +67,7 @@ if(isset($_POST['update_product'])){
     </div>
     <div class="mb-3">
         <label for="user-name" class="col-form-label">Image:</label>
-        <input type="text" class="form-control" id="imgUrl" name="imgUrl" value="<?= $product_inf['image']?>">
+        <input type="file" class="form-control" id="imgUrl" name="imgUrl" value="<?= $product_inf['image']?>">
     </div>
 
     <div class="modal-footer">

@@ -49,7 +49,7 @@ if(isset($_POST['update_category'])){
     </div>
     <div class="mb-3">
         <label for="user-name" class="col-form-label">image:</label>
-        <input type="text" class="form-control" id="imgUrl" name="imgUrl" value="<?= $category_inf['image']?>">
+        <input type="file" class="form-control" id="imgUrl" name="imgUrl" value="<?= $category_inf['image']?>">
     </div>
 
     <div class="modal-footer">

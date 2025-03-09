@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (in_array($img_ext, $allowed_exts)) {
             $new_img_name = "profile_" . time() . ".$img_ext";
-            move_uploaded_file($img_tmp, "uploads/$new_img_name");
+            move_uploaded_file($img_tmp, "images/$new_img_name");
 
             $update_image = $conn->prepare("UPDATE `user` SET profile_image = ? WHERE id = ?");
             $update_image->execute([$new_img_name, $user_id]);

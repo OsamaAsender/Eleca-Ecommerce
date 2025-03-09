@@ -25,94 +25,75 @@ $coupons = $select_coupons->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Coupons</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="css/manage_coupons.css">
-    <style>
-        /* Sidebar Styles */
-        ul {
-            list-style-type: none;
-        }
-        #sidebar {
-            width: 15%;
-            height: 100vh;
-            background-color: #1A2942;
-            position: fixed;
-            top: 0;
-            left: 0;
-            padding-top: 1rem;
-        }
-        .CustomSidebarButtons {
-            width: 100%;
-            padding: 1rem;
-            text-align: start;
-            border-radius: 0;
-            font-weight: 500;
-            background: none;
-            color: white;
-            border: none;
-            text-decoration: none;
-        }
-        .CustomSidebarButtons:hover {
-            background-color: #263b5f;
-        }
-        .sidebarHeaderbutton {
-            width: 100%;
-            padding: 1rem;
-            font-size: 2rem;
-            border-radius: 0;
-            font-weight: 500;
-            background: none;
-            color: white;
-            border: none;
-            text-decoration: none;
-        }
-        nav {
-            width: 85vw;
-            margin-left: 15%;
-            padding: 1rem;
-        }
-        .navbarEnd {
-            margin: 1rem;
-            width: 3rem;
-        }
-        /* Ensure the main content isn't hidden behind the sidebar */
-        section.dashboard {
-            margin-left: 15%;
-            padding: 1rem;
-        }
-        .box-container {
-            display: flex;
-            justify-content: space-between;
-        }
-    </style>
+   
 </head>
 <body>
+<div class="d-flex">
+        <div id="sidebar">
+            <button class="btn text-white sidebarHeaderbutton">Dashboard</button>
+            <a href="../UserCRUDS/index.php"><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\man.png" alt=""
+            class="me-1"> Users</button></a>
+            <a href="../CategoryCRUDS/index.php"> <button class="btn CustomSidebarButtons text-white"><img
+            src="../flaticon/categories.png" alt="" class="me-1"> Categories</button></a>
+            <a href="../ProductCRUDS\index.php">
+                <button class="btn CustomSidebarButtons text-white"><img src="../flaticon\product.png" alt=""
+                        class="me-1">
+                         Products</button>
+            </a>
+         
+           
+            <a href="../CouponCRUDS"><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\coupon.png" alt=""
+                        class="me-1"> Coupons</button></a>
+            <a href="../OrderRU/index.php"><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\received.png" alt=""
+                        class="me-1"> Orders</button></a>
 
-<!-- Sidebar -->
-<div id="sidebar">
-    <button class="btn sidebarHeaderbutton">Admin Dashboard</button>
-    <a href="../UserCRUDS/index.php"><button class="btn CustomSidebarButtons"><img src="../flaticon/man.png" alt="" class="me-1"> Users</button></a>
-    <a href="../CategoryCRUDS/index.php"><button class="btn CustomSidebarButtons"><img src="../flaticon/categories.png" alt="" class="me-1"> Categories</button></a>
-    <a href="../ProductCRUDS/index.php"><button class="btn CustomSidebarButtons"><img src="../flaticon/product.png" alt="" class="me-1"> Products</button></a>
-    <a href="../CouponCRUDS/index.php"><button class="btn CustomSidebarButtons"><img src="../flaticon/coupon.png" alt="" class="me-1"> Coupons</button></a>
-    <a href="../OrderRU/index.php"><button class="btn CustomSidebarButtons"><img src="../flaticon/received.png" alt="" class="me-1"> Orders</button></a>
-    <a href=""><button class="btn CustomSidebarButtons"><img src="../flaticon/cogwheel.png" alt="" class="me-1"> Settings</button></a>
-</div>
+        </div>
+        <div class="page-content">
+            <nav class="navbar navbar-expand-lg bg-body-tertiary">
+                <div class="container-fluid d-flex justify-content-between">
+                    <div class="d-flex">
+                    <button class="btn fw-bold">ELECA SHOP</button>
+                    </div>
 
+                    <div class="me-5 pe-4">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link " href="#" role="button" data-bs-toggle="dropdown">
+                                    <img src="../flaticon/profile.png" alt="asdfsadf">
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="../components/profile.php" class="dropdown-item" href=""><i class="fa-solid fa-user"></i> Profile</a>
+                                    </li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item" href="../components/logout.php"><i class="fa-solid fa-right-from-bracket"></i>
+                                            Log out</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                    </div>
+
+                </div>
+
+            </nav>
 <!-- Main content area -->
-<section class="dashboard">
+<section class="container mt-5">
     <h1 class="heading">Manage Coupons</h1>
     <div class="box-container">
-        <div class="box">
-            <h3>Add New Coupon</h3>
-            <button class="btn" onclick="openModal('add')">Add Coupon</button>
+        <div class="box mb-5">
+            <button class="btn btn-primary" onclick="openModal('add')">Add Coupon</button>
         </div>
 
         <div class="box">
-            <h3>Coupons List</h3>
-            <table>
+
+            <table class="table table-hover table-striped ">
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -130,8 +111,8 @@ $coupons = $select_coupons->fetchAll(PDO::FETCH_ASSOC);
                             <td><?= $coupon['start_date']; ?></td>
                             <td><?= $coupon['exp_date']; ?></td>
                             <td>
-                                <button class="btn" onclick="openModal('edit', <?= $coupon['id']; ?>, '<?= htmlspecialchars($coupon['name']); ?>', <?= $coupon['discount_percentage']; ?>, '<?= $coupon['start_date']; ?>', '<?= $coupon['exp_date']; ?>')">Edit</button>
-                                <button class="btn" onclick="openModal('delete', <?= $coupon['id']; ?>)">Delete</button>
+                                <button class="btn btn-sm btn-primary" onclick="openModal('edit', <?= $coupon['id']; ?>, '<?= htmlspecialchars($coupon['name']); ?>', <?= $coupon['discount_percentage']; ?>, '<?= $coupon['start_date']; ?>', '<?= $coupon['exp_date']; ?>')">Edit</button>
+                                <button class="btn btn-sm btn-danger" onclick="openModal('delete', <?= $coupon['id']; ?>)">Delete</button>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -139,9 +120,7 @@ $coupons = $select_coupons->fetchAll(PDO::FETCH_ASSOC);
             </table>
         </div>
     </div>
-</section>
-
-<!-- Modals -->
+    <!-- Modals -->
 <!-- Add Coupon Modal -->
 <div id="addCouponModal" class="modal">
     <div class="modal-content">
@@ -184,7 +163,13 @@ $coupons = $select_coupons->fetchAll(PDO::FETCH_ASSOC);
         </form>
     </div>
 </div>
+</section>
+
+</div>
+
+
 
 <script src="js/admin_script.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

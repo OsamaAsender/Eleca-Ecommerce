@@ -44,19 +44,14 @@ if (isset($_SESSION['user_id'])) {
                         class="me-1"> Coupons</button></a>
             <a href="../OrderRU/index.php"><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\received.png" alt=""
                         class="me-1"> Orders</button></a>
-            <a href="../CouponCRUDS/index.php"><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\cogwheel.png" alt=""
-                        class="me-1"> Settings</button></a>
+        
 
         </div>
         <div class="page-content">
             <nav class="navbar navbar-expand-lg bg-body-tertiary">
                 <div class="container-fluid d-flex justify-content-between">
-                    <div class="d-flex">
-                        <button class="btn"><i class="fa-solid fa-bars"></i></button>
-                        <form class="d-flex" role="search">
-                            <input class="form-control me-2" type="search" placeholder="search">
-                            <button class="btn btn-outline-success" type="submit">Search</button>
-                        </form>
+                    <div class="">
+                        <button class="btn fw-bold">ELECA SHOP</button>
                     </div>
 
 
@@ -142,9 +137,9 @@ if (isset($_SESSION['user_id'])) {
                     </div>
                   </td>
                   <td class='text-center'>
-                  <a href='./update_data/update_page.php?id={$product['product_id']}' class='btn btn-sm btn-success'><i class='fa-solid fa-pen-to-square'></i> Edit</a>
+                  <a href='./update_data/update_page.php?id={$product['product_id']}' class='btn btn-sm btn-primary'> Edit</a>
                   |
-                  <a href='./delete_data/delete_page.php?id={$product['product_id']}' class='btn btn-sm btn-danger'><i class='fa-solid fa-trash'></i> Delete</a>
+                  <a href='./delete_data/delete_page.php?id={$product['product_id']}' class='btn btn-sm btn-danger'> Delete</a>
                   </td>
 
                   </tr>";
@@ -160,7 +155,7 @@ if (isset($_SESSION['user_id'])) {
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">New category</h5>
+                                <h5 class="modal-title" id="exampleModalLabel">New Product</h5>
                                 <!-- FIX: Bootstrap 5 requires 'btn-close' instead of 'close' -->
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
@@ -193,7 +188,7 @@ if (isset($_SESSION['user_id'])) {
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary"
                                             data-bs-dismiss="modal">Close</button>
-                                        <input type="submit" class="btn btn-success" name="add_product" value="Add">
+                                        <input type="submit" class="btn btn-primary" name="add_product" value="Add">
                                     </div>
                                 </form>
 

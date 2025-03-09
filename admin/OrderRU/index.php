@@ -30,30 +30,25 @@ if (isset($_SESSION['user_id'])) {
     <div class="d-flex">
         <div id="sidebar">
             <button class="btn text-white sidebarHeaderbutton">Dashboard</button>
-            <a href="../UserCRUDS/index.php"><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\man.png" alt=""
-                        class="me-1"> Users</button></a>
+            <a href="../UserCRUDS/index.php"><button class="btn CustomSidebarButtons text-white"><img
+                        src="../flaticon\man.png" alt="" class="me-1"> Users</button></a>
             <a href="../CategoryCRUDS/index.php"> <button class="btn CustomSidebarButtons text-white"><img
                         src="../flaticon\categories.png" alt="" class="me-1"> Categories</button></a>
             <a href="../ProductCRUDS/index.php">
                 <button class="btn CustomSidebarButtons text-white"><img src="../flaticon\product.png" alt=""
                         class="me-1"> Products</button></a>
-            <a href="../CouponCRUDS/index.php"><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\coupon.png" alt=""
-                        class="me-1"> Coupons</button></a>
+            <a href="../CouponCRUDS/index.php"><button class="btn CustomSidebarButtons text-white"><img
+                        src="../flaticon\coupon.png" alt="" class="me-1"> Coupons</button></a>
             <a href="#"><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\received.png" alt=""
                         class="me-1"> Orders</button></a>
-            <a href=""><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\cogwheel.png" alt=""
-                        class="me-1"> Settings</button></a>
+
 
         </div>
         <div class="page-content">
             <nav class="navbar navbar-expand-lg bg-body-tertiary">
                 <div class="container-fluid d-flex justify-content-between">
                     <div class="d-flex">
-                        <button class="btn"><i class="fa-solid fa-bars"></i></button>
-                        <form class="d-flex" role="search">
-                            <input class="form-control me-2" type="search" placeholder="search">
-                            <button class="btn btn-outline-success" type="submit">Search</button>
-                        </form>
+                        <button class="btn fw-bold">ELECA SHOP</button>
                     </div>
 
 
@@ -65,7 +60,8 @@ if (isset($_SESSION['user_id'])) {
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li>
-                                        <a class="dropdown-item" href="#"><i class="fa-solid fa-user"></i> Profile</a>
+                                        <a href="../components/profile.php" class="dropdown-item" href="#"><i
+                                                class="fa-solid fa-user"></i> Profile</a>
                                     </li>
                                     <li>
                                         <hr class="dropdown-divider">
@@ -129,13 +125,16 @@ if (isset($_SESSION['user_id'])) {
                                 <td class="text-center">$<?= number_format($row['total_price'], 2) ?></td>
                                 <td class="text-center"><?= ucfirst($row['status']) ?></td>
                                 <td class="text-center">
-                                    <?= $row['coupon_name'] ? htmlspecialchars($row['coupon_name']) : 'N/A' ?></td>
+                                    <?= $row['coupon_name'] ? htmlspecialchars($row['coupon_name']) : 'N/A' ?>
+                                </td>
                                 <td class="text-center">
-                                    <a href="edit_order.php?id=<?= $row['id'] ?>" class="btn btn-success btn-sm"> <i
-                                            class="fa-solid fa-pen-to-square"></i> Edit</a>
+                                    <a href="edit_order.php?id=<?= $row['id'] ?>" class="btn btn-primary btn-sm"> Edit</a>
                                     |
-                                    <a href="update_order.php?id=<?= $row['id'] ?>" class="btn btn-danger btn-sm"><i
-                                            class='fa-solid fa-trash'></i> Delete</a>
+                                    <a href="update_order.php?id=<?= $row['id'] ?>" class="btn btn-danger btn-sm">
+                                        Delete</a>
+                                    |
+                                    <a href="update_order.php?id=<?= $row['id'] ?>" class="btn btn-success btn-sm"><i
+                                            class='fa-solid'></i> Details</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -147,7 +146,35 @@ if (isset($_SESSION['user_id'])) {
     </div>
 
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#OrderDetails">
+        details
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Understood</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
 </body>
 
 </html>
