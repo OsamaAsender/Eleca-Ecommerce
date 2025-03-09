@@ -31,7 +31,7 @@ if (isset($_POST['add_user'])) {
             // 'profile_image' => $user_image // Corrected here
         ];
         $statment->execute($data);
-        header('Location: ../index.php?message=add successfully');
+        header('Location: ../index.php');
     } 
     }
 

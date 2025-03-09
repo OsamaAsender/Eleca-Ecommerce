@@ -41,7 +41,7 @@ if (isset($_POST['add_product'])) {
     ];
 
     $statment->execute($data);
-    header('Location: ../index.php?message=add successfully');
+    header('Location: ../index.php');
 } else {
     echo "not insert data";
 }

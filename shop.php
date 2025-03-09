@@ -1,7 +1,6 @@
 <?php
 // تضمين الاتصال بقاعدة البيانات
 include 'components/connect.php';
-
 // بدء الجلسة
 session_start();
 
@@ -55,39 +54,47 @@ if(isset($_POST['add_to_wishlist'])){
 
 // إضافة عنصر إلى الطلب
 if(isset($_POST['add_to_order'])){
-   $pid = $_POST['pid']; // الحصول على معرف المنتج المرسل عبر النموذج
+    $pid = $_POST['pid']; // الحصول على معرف المنتج المرسل عبر النموذج
+    $user_id = $_SESSION['user_id'] ?? null;
 
-   // التحقق إذا كان لدى المستخدم طلب قيد التنفيذ (حالة "معلق")
-   $select_order = $conn->prepare("SELECT * FROM orders WHERE user_id = ? AND status = 'pending'");
-   $select_order->execute([$user_id]);
-   if($select_order->rowCount() > 0){
-      // إذا كان هناك طلب معلق، الحصول على معرفه
-      $order = $select_order->fetch(PDO::FETCH_ASSOC);
-      $order_id = $order['id'];
-   } else {
-      // إذا لم يكن هناك طلب معلق، إنشاء طلب جديد
-      $insert_order = $conn->prepare("INSERT INTO orders (user_id, status) VALUES (?, 'pending')");
-      $insert_order->execute([$user_id]);
-      // الحصول على معرف الطلب الجديد
-      $order_id = $conn->lastInsertId();
-   }
+    if (!$user_id) {
+        die("User ID is not set");
+    }
 
-   // التحقق إذا كان المنتج موجودًا في الطلب بالفعل
-   $check_order_item = $conn->prepare("SELECT * FROM order_item WHERE order_id = ? AND product_id = ?");
-   $check_order_item->execute([$order_id, $pid]);
-   if($check_order_item->rowCount() > 0){
-      // إذا كان المنتج موجودًا بالفعل في الطلب
-      echo 'Product already exists in your order';
-      exit();
-   } else {
-      // إذا لم يكن موجودًا، إضافته إلى الطلب
-      $insert_order_item = $conn->prepare("INSERT INTO order_item (order_id, product_id, quantity) VALUES (?, ?, 1)");
-      $insert_order_item->execute([$order_id, $pid]);
-      echo 'success'; // إرجاع رسالة نجاح
-      exit();
-   }
+    // التحقق إذا كان لدى المستخدم طلب قيد التنفيذ (حالة "معلق")
+    $select_order = $conn->prepare("SELECT * FROM `order` WHERE user_id = ? AND status = 'pending'");
+    $select_order->execute([$user_id]);
+
+    if($select_order->rowCount() > 0){
+        $order = $select_order->fetch(PDO::FETCH_ASSOC);
+        $order_id = $order['id'];
+    } else {
+        // إنشاء طلب جديد
+        $insert_order = $conn->prepare("INSERT INTO `order` (user_id, status) VALUES (?, 'pending')");
+        $insert_order->execute([$user_id]);
+        $order_id = $conn->lastInsertId();
+    }
+
+    // التحقق إذا كان المنتج موجودًا في الطلب بالفعل
+    $check_order_item = $conn->prepare("SELECT * FROM order_item WHERE order_id = ? AND product_id = ?");
+    $check_order_item->execute([$order_id, $pid]);
+
+    if($check_order_item->rowCount() > 0){
+        // تحديث الكمية بدلاً من التوقف
+        $update_quantity = $conn->prepare("UPDATE order_item SET quantity = quantity + 1 WHERE order_id = ? AND product_id = ?");
+        $update_quantity->execute([$order_id, $pid]);
+        echo 'Quantity updated';
+        exit();
+    } else {
+        // إضافة المنتج إلى الطلب
+        $insert_order_item = $conn->prepare("INSERT INTO order_item (order_id, product_id, quantity) VALUES (?, ?, 1)");
+        $insert_order_item->execute([$order_id, $pid]);
+        echo 'success'; // إرجاع رسالة نجاح
+        exit();
+    }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -113,14 +120,7 @@ if(isset($_POST['add_to_order'])){
          color: #333;
       }
 
-      header {
-         background-color: #007bff;
-         color: white;
-         padding: 20px 0;
-         text-align: center;
-         font-size: 2em;
-         font-weight: bold;
-      }
+      
 
       /* تخصيص قسم الفئات */
       .categories, .products {
@@ -149,7 +149,7 @@ if(isset($_POST['add_to_order'])){
       .category-btn {
          padding: 10px 20px;
          font-size: 1.2em;
-         background-color: #007bff;
+         background-color: #2980b9;
          color: white;
          border-radius: 5px;
          text-decoration: none;
@@ -169,15 +169,15 @@ if(isset($_POST['add_to_order'])){
          box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
       }
 
-      .box-container {
+      .box1-container {
          display: grid;
-         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+         grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
          gap: 20px;
          justify-content: center;
          margin-top: 20px;
       }
 
-      .box {
+      .box1 {
          background-color: #fff;
          border-radius: 10px;
          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -185,19 +185,19 @@ if(isset($_POST['add_to_order'])){
          transition: transform 0.3s ease;
       }
 
-      .box:hover {
+      .box1:hover {
          transform: translateY(-10px);
          box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
       }
 
-      .box img {
+      .box1 img {
          width: 100%;
          height: 200px;
          object-fit: cover;
          transition: transform 0.3s ease;
       }
 
-      .box:hover img {
+      .box1:hover img {
          transform: scale(1.05);
       }
 
@@ -212,21 +212,22 @@ if(isset($_POST['add_to_order'])){
          letter-spacing: 1px;
       }
 
-      .product-box {
+      .product-box1 {
          background-color: #fff;
          padding: 20px;
          border-radius: 10px;
          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
          transition: transform 0.3s ease;
          text-align: center;
+         
       }
 
-      .product-box:hover {
+      .product-box1:hover {
          transform: translateY(-10px);
          box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
       }
 
-      .product-box img {
+      .product-box1 img {
          width: 100%;
          height: 250px;
          object-fit: cover;
@@ -234,15 +235,17 @@ if(isset($_POST['add_to_order'])){
          transition: transform 0.3s ease;
       }
 
-      .product-box .name {
+      .product-box1 .name {
          font-size: 1.4em;
          margin-top: 15px;
-         color: #333;
+         color: white;
+         background-color:#2980b9;
+         border-radius: 40px;
       }
 
-      .product-box p {
-         font-size: 1.2em;
-         color: #007bff;
+      .product-box1 p {
+         font-size: 2em;
+         color: #2980b9;
          margin-bottom: 20px;
       }
 
@@ -251,7 +254,7 @@ if(isset($_POST['add_to_order'])){
          width: 100%;
          padding: 12px;
          font-size: 1.1em;
-         background-color: #007bff;
+         background-color: #2980b9;
          color: white;
          border: none;
          border-radius: 5px;
@@ -269,13 +272,24 @@ if(isset($_POST['add_to_order'])){
       }
 
       /* تخصيص قسم التذييل */
-      footer {
-         background-color: #007bff;
-         color: white;
-         padding: 20px 0;
-         text-align: center;
-         font-size: 1.2em;
-      }
+      
+      .view-product-btn {
+   display: inline-block;
+   padding: 10px 15px;
+   background-color: #007bff;
+   color: white;
+   text-decoration: none;
+   border-radius: 5px;
+   margin-top: 10px;
+   font-weight: bold;
+   transition: background-color 0.3s, transform 0.3s;
+}
+
+.view-product-btn:hover {
+   background-color: #0056b3;
+   transform: scale(1.05);
+}
+
 
    </style>
 </head>
@@ -283,14 +297,13 @@ if(isset($_POST['add_to_order'])){
 
 
 
-<!-- تضمين رأس الصفحة الخاصة بالمستخدم -->
-<?php include 'components/user_header.php'; ?>
-<header>
-   Welcome to Our Shop
-</header>
+
+<?php include 'components/user_header.php';?>
+
+
 <!-- قسم تصنيف المنتجات حسب الفئة -->
 <section class="categories container">
-   <h1 class="heading">Filter Products by Category</h1>
+   <h1 class="heading">Categories</h1>
    <div class="category-buttons">
       <!-- زر عرض جميع المنتجات -->
       <a href="shop.php" class="category-btn <?= (!isset($_GET['category_id'])) ? 'active' : ''; ?>">All Items</a>
@@ -311,7 +324,7 @@ if(isset($_POST['add_to_order'])){
 <!-- قسم عرض المنتجات -->
 <section class="products container">
    <h2 class="heading">Products</h2>
-   <div class="box-container">
+   <div class="box1-container" >
       <?php
          // التحقق من فئة المنتجات المختارة
          $category_id = isset($_GET['category_id']) ? $_GET['category_id'] : '';
@@ -329,10 +342,12 @@ if(isset($_POST['add_to_order'])){
          // عرض كل منتج
          while ($fetch_product = $select_products->fetch(PDO::FETCH_ASSOC)) {
       ?>
-      <div class="product-box">
-         <img src="images/<?= $fetch_product['image'] ?: 'default_product.png'; ?>" alt="Product Image">
+      <div class="product-box1" style="width: 350px;">
+      <a href="single.php?id=<?= $fetch_product['id']; ?>" class="product-link">
+         <img src="admin/ProductCRUDS/images/<?= $fetch_product['image'] ?: 'default_product.png'; ?>" style="width:auto;height:auto" alt="Product Image">
          <div class="name"> <?= $fetch_product['name']; ?> </div>
-         <p>Price: $<?= $fetch_product['price']; ?></p>
+         <p>Price: JD <?= $fetch_product['price']; ?></p>
+         </a>
          <!-- نموذج لإضافة المنتج إلى قائمة الرغبات أو الطلب -->
          <form action="" method="post">
             <input type="hidden" name="pid" value="<?= $fetch_product['id']; ?>">
@@ -344,10 +359,7 @@ if(isset($_POST['add_to_order'])){
    </div>
 </section>
 
-<!-- تذييل الصفحة -->
-<footer>
-   &copy; 2025 All Rights Reserved.
-</footer>
+
 
 <!-- سكربت التعامل مع زر إضافة المنتج إلى قائمة الرغبات والطلب -->
 <script>
@@ -428,3 +440,6 @@ if(isset($_POST['add_to_order'])){
 
 </body>
 </html>
+<?php
+include'./components/footer.php';
+?>

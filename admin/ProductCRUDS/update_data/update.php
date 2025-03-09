@@ -47,7 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_product'])) {
             ]);
 
             // Redirect or display success message
-            header("Location: ../index.php?message=update_success");
+            header("Location: ../index.php");
             exit;
         } else {
             echo "Error: Category not found.";

@@ -55,7 +55,7 @@ if(isset($_POST['update_user'])){
         if ($statement->execute()) {
             // Redirect to the same page with the id and a success message
             $message = urlencode('update successful');
-            header("Location: ".$_SERVER['PHP_SELF']."?id=$id&message=$message");
+            header("Location: ".$_SERVER['PHP_SELF']);
             exit();
         }
     } catch (PDOException $e) {

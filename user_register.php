@@ -95,11 +95,19 @@ if (isset($_POST['submit'])) {
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
-
+    <style>
+        .form-container{
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+    </style>
 </head>
 <body>
 
-<?php include 'components/user_header.php'; ?>
+
 
 <section class="form-container">
     <form action="" method="post">
@@ -125,7 +133,7 @@ if (isset($_POST['submit'])) {
         <a href="user_login.php" style="color:white;" class="option-btn">Login Now</a>
     </form>
 </section>
-<?php include 'components/footer.php'; ?>
+
 <script src="js/script.js"></script>
 
 </body>

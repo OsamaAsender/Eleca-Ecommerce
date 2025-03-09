@@ -34,7 +34,7 @@ if(isset($_POST['add_category'])){
         'image'=>$category_img
     ];
     $statment->execute($data);
-    header('location:../index.php?message=add sucesssfuly');
+    header('location:../index.php');
 
 
 

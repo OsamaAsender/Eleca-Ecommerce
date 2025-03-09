@@ -43,7 +43,9 @@ if(isset($_SESSION['user_id'])){
 
       <div class="content">
          <h3>why choose us?</h3>
-         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam veritatis minus et similique doloribus? Harum molestias tenetur eaque illum quas? Obcaecati nulla in itaque modi magnam ipsa molestiae ullam consequuntur.</p>
+         <p>Choose us for a seamless shopping experience with top-quality electronics at competitive prices.
+             Our e-commerce platform offers a wide range of the latest gadgets and accessories, ensuring you get the best products with fast delivery, secure payments, and exceptional customer service.
+         </p>
          <a href="contact.php" class="btn">contact us</a>
       </div>
 
@@ -52,94 +54,67 @@ if(isset($_SESSION['user_id'])){
 </section>
 
 <section class="reviews">
-   
-   <h1 class="heading">client's reviews</h1>
+   <h1 class="heading">Client's Reviews</h1>
 
    <div class="swiper reviews-slider">
 
-   <div class="swiper-wrapper">
+      <div class="swiper-wrapper">
 
-      <div class="swiper-slide slide">
-         <img src="images/pic-1.png" alt="">
-         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia tempore distinctio hic, iusto adipisci a rerum nemo perspiciatis fugiat sapiente.</p>
-         <div class="stars">
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star-half-alt"></i>
+         <div class="swiper-slide slide">
+            <img src="images/pic-3.png" alt="Client John Deo">
+            <p>"The shopping experience was fantastic! I ordered a new laptop, and it arrived quickly, well-packaged, and in perfect condition. The site was easy to navigate, and I’m really happy with my purchase!"</p>
+            <div class="stars">
+               <i class="fas fa-star"></i>
+               <i class="fas fa-star"></i>
+               <i class="fas fa-star"></i>
+               <i class="fas fa-star"></i>
+               <i class="fas fa-star"></i>
+            </div>
+            <h3>John Deo</h3>
          </div>
-         <h3>john deo</h3>
+
+         <div class="swiper-slide slide">
+            <img src="images/pic-4.png" alt="Client Jane Doe">
+            <p>"I bought a smartphone from this site, and the whole process was smooth. I got great value for money, and their customer support was very responsive when I had questions. Highly recommend!"</p>
+            <div class="stars">
+               <i class="fas fa-star"></i>
+               <i class="fas fa-star"></i>
+               <i class="fas fa-star"></i>
+               <i class="fas fa-star-half-alt"></i>
+               <i class="fas fa-star"></i>
+            </div>
+            <h3>Jane Doe</h3>
+         </div>
+
+         <div class="swiper-slide slide">
+            <img src="images/pic-5.png" alt="Client Alex Smith">
+            <p>"I’ve been shopping for electronics online for years, and this site is one of the best. The selection is amazing, and the checkout process was simple. The delivery was on time, and my tablet is perfect!"</p>
+            <div class="stars">
+               <i class="fas fa-star"></i>
+               <i class="fas fa-star"></i>
+               <i class="fas fa-star"></i>
+               <i class="fas fa-star"></i>
+               <i class="fas fa-star"></i>
+            </div>
+            <h3>Alex Smith</h3>
+         </div>
+
+         <div class="swiper-slide slide">
+            <img src="images/pic-6.png" alt="Client Sophia Lee">
+            <p>"Absolutely i will buy love my new headphones! The sound quality is incredible, and they arrived much faster than expected. I’ll definitely be coming back to shop here for more gadgets!"</p>
+            <div class="stars">
+               <i class="fas fa-star"></i>
+               <i class="fas fa-star"></i>
+               <i class="fas fa-star"></i>
+               <i class="fas fa-star-half-alt"></i>
+               <i class="fas fa-star"></i>
+            </div>
+            <h3>Sophia Lee</h3>
+         </div>
+
       </div>
 
-      <div class="swiper-slide slide">
-         <img src="images/pic-2.png" alt="">
-         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia tempore distinctio hic, iusto adipisci a rerum nemo perspiciatis fugiat sapiente.</p>
-         <div class="stars">
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star-half-alt"></i>
-         </div>
-         <h3>john deo</h3>
-      </div>
-
-      <div class="swiper-slide slide">
-         <img src="images/pic-3.png" alt="">
-         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia tempore distinctio hic, iusto adipisci a rerum nemo perspiciatis fugiat sapiente.</p>
-         <div class="stars">
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star-half-alt"></i>
-         </div>
-         <h3>john deo</h3>
-      </div>
-
-      <div class="swiper-slide slide">
-         <img src="images/pic-4.png" alt="">
-         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia tempore distinctio hic, iusto adipisci a rerum nemo perspiciatis fugiat sapiente.</p>
-         <div class="stars">
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star-half-alt"></i>
-         </div>
-         <h3>john deo</h3>
-      </div>
-
-      <div class="swiper-slide slide">
-         <img src="images/pic-5.png" alt="">
-         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia tempore distinctio hic, iusto adipisci a rerum nemo perspiciatis fugiat sapiente.</p>
-         <div class="stars">
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star-half-alt"></i>
-         </div>
-         <h3>john deo</h3>
-      </div>
-
-      <div class="swiper-slide slide">
-         <img src="images/pic-6.png" alt="">
-         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia tempore distinctio hic, iusto adipisci a rerum nemo perspiciatis fugiat sapiente.</p>
-         <div class="stars">
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star-half-alt"></i>
-         </div>
-         <h3>john deo</h3>
-      </div>
-
-   </div>
-
-   <div class="swiper-pagination"></div>
+      <div class="swiper-pagination"></div>
 
    </div>
 

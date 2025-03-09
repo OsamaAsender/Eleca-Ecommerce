@@ -36,7 +36,7 @@ if(isset($_POST['update_category'])){
 
     // Execute the statement
     $statment->execute();
-    header('location:../index.php?message=update successful');
+    header('location:../index.php');
 }
 ?>
 

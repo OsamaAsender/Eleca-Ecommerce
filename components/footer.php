@@ -6,7 +6,7 @@
          <h3>extra links</h3>
          <a href="user_login.php"> <i class="fas fa-angle-right"></i> login</a>
          <a href="user_register.php"> <i class="fas fa-angle-right"></i> register</a>
-         <a href="cart.php"> <i class="fas fa-angle-right"></i> cart</a>
+         <a href="shop.php"> <i class="fas fa-angle-right"></i> Products</a>
          <a href="orders.php"> <i class="fas fa-angle-right"></i> orders</a>
       </div>
 
@@ -19,15 +19,15 @@
       </div>
 
       <div class="box">
-         <h3>follow us</h3>
-         <a href="#"><i class="fab fa-facebook-f"></i>facebook</a>
-         <a href="#"><i class="fab fa-twitter"></i>twitter</a>
-         <a href="#"><i class="fab fa-instagram"></i>instagram</a>
-         <a href="#"><i class="fab fa-linkedin"></i>linkedin</a>
+         <h3>useful links</h3>
+         <a href="faq.php"><i class="fas fa-question-circle"></i> FAQ</a>
+         <a href="privacy_policy.php"><i class="fas fa-shield-alt"></i> Privacy Policy</a>
+         <a href="terms_conditions.php"><i class="fas fa-gavel"></i> Terms & Conditions</a>
+         
       </div>
 
    </section>
 
-   <div class="credit">&copy; copyright @ <?= date('Y'); ?> by Eleca | all rights reserved!</div>
+   <div class="credit">&copy; copyright @ <?= date('Y'); ?> by <span style="color:#2980b9;">Eleca</span> | all rights reserved!</div>
 
 </footer>

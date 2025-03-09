@@ -61,9 +61,18 @@ if (isset($_POST['submit'])) {
     <title>Login</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        .form-container{
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+    </style>
 </head>
 <body>
-    <?php include 'components/user_header.php'; ?>
+    
     <section class="form-container">
         <form action="" method="post">
             <h3>Login Now</h3>
@@ -81,7 +90,7 @@ if (isset($_POST['submit'])) {
             <a href="user_register.php" class="option-btn" style="color:white;">Register Now</a>
         </form>
     </section>
-    <?php include 'components/footer.php'; ?>
+    
     <script src="js/script.js"></script>
 </body>
 </html>

@@ -265,13 +265,13 @@ section{
 
 .home-bg .home .slide .content span{
    font-size: 2rem;
-   color:var(--white);
+   color:red;
 }
 
 .home-bg .home .slide .content h3{
    margin-top: 1rem;
    font-size: 4rem;
-   color:var(--white);
+   color:black;
    text-transform: uppercase;
 }
 
@@ -303,7 +303,7 @@ section{
 }
 
 .category .slide:hover h3{
-   color:var(--white);
+   color:white;
 }
 
 .category .slide img{
@@ -316,7 +316,7 @@ section{
 
 .category .slide h3{
    font-size: 2rem;
-   color:var(--black);
+   color:#2980b9;
    user-select: none;
 }
 

@@ -1,144 +1,259 @@
 <?php
-session_start();
 include 'components/connect.php';
 
-// Check if user is logged in
-$user_id = $_SESSION['user_id'] ?? null;
+session_start();
 
-// Sample fallback products
-$sampleProducts = [
-    ['id' => 1, 'product_name' => 'Apple MacBook Pro 16"', 'price' => 2499.99, 'image' => 'images/icon-1.png', 'added_on' => '2025-03-01'],
-    ['id' => 2, 'product_name' => 'Sony WH-1000XM5 Headphones', 'price' => 349.99, 'image' => 'images/icon-2.png', 'added_on' => '2025-03-02'],
-    ['id' => 3, 'product_name' => 'Samsung Galaxy S23 Ultra', 'price' => 1199.00, 'image' => 'images/icon-3.png', 'added_on' => '2025-03-03']
-];
-
-$wishlistItems = [];
-
-// Fetch real wishlist if user is logged in
-if ($user_id) {
-    $stmt = $conn->prepare("
-        SELECT 
-            p.id AS id,
-            p.name,
-            p.price,
-            wi.id AS wishlist_item_id
-        FROM 
-            wishlist w
-        JOIN 
-            wishlist_item wi ON w.id = wi.wishlist_id
-        JOIN 
-            product p ON wi.product_id = p.id
-        WHERE 
-            w.user_id = ?
-    ");
-    $stmt->execute([$user_id]);
-    $wishlistItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-
-// If wishlist is empty, fallback to sample data (for guests or empty wishlist)
-if (empty($wishlistItems)) {
-    $wishlistItems = $sampleProducts;
-    $isSampleData = true;
+if (isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
 } else {
-    $isSampleData = false;
+    $user_id = '';
+    header('location:user_login.php');
+    exit();
 }
 
-// Handle item removal (logged-in users only)
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_item'])) {
-    $product_id = intval($_POST['delete_item']);
+if (isset($_POST['delete'])) {
+    $wishlist_item_id = $_POST['wishlist_item_id'];
+    $delete_wishlist_item = $conn->prepare("DELETE FROM `wishlist_item` WHERE id = ?");
+    $delete_wishlist_item->execute([$wishlist_item_id]);
+}
 
-    if ($user_id && !$isSampleData) {
-        // Remove from real wishlist in database
-        $deleteStmt = $conn->prepare("
-            DELETE wi FROM wishlist_item wi
-            JOIN wishlist w ON wi.wishlist_id = w.id
-            WHERE wi.product_id = ? AND w.user_id = ?
-        ");
-        $deleteStmt->execute([$product_id, $user_id]);
-    } else {
-        // Remove from session wishlist (fallback case for guests)
-        $_SESSION['wishlist'] = array_values(array_filter($wishlistItems, fn($item) => $item['id'] != $product_id));
-        $wishlistItems = $_SESSION['wishlist'];
+if (isset($_GET['delete_all'])) {
+    $delete_wishlist_items = $conn->prepare("DELETE FROM `wishlist_item` WHERE wishlist_id IN (SELECT id FROM `wishlist` WHERE user_id = ?)");
+    $delete_wishlist_items->execute([$user_id]);
+    header('location:wishlist.php');
+    exit();
+}
+
+
+if (isset($_POST['add_to_order'])) {
+    $wishlist_item_id = $_POST['wishlist_item_id'];
+    $select_wishlist_item = $conn->prepare("SELECT * FROM wishlist_item WHERE id = ?");
+    $select_wishlist_item->execute([$wishlist_item_id]);
+    $item = $select_wishlist_item->fetch(PDO::FETCH_ASSOC);
+    
+    if ($item) {
+        $id = $item['id'];
+        $product_id = $item['product_id'];
+        $select_product = $conn->prepare("SELECT * FROM product WHERE id = ?");
+        $select_product->execute([$product_id]);
+        
+        $product = $select_product->fetch(PDO::FETCH_ASSOC);
+        
+        if ($product) {
+            $check_order = $conn->prepare("SELECT * FROM `order` WHERE user_id = ? AND status = 'pending'");
+            $check_order->execute([$user_id]);
+            $order = $check_order->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$order) {
+                $insert_order = $conn->prepare("INSERT INTO `order` (user_id, total_price, status) VALUES (?, ?, 'pending')");
+                $insert_order->execute([$user_id, $product['price']]);
+                $order_id = $conn->lastInsertId();
+            } else {
+                $order_id = $order['id'];
+                $check_order_item = $conn->prepare("SELECT * FROM order_item WHERE order_id = ? AND product_id = ?");
+                $check_order_item->execute([$order_id, $product_id]);
+                $order_item = $check_order_item->fetch(PDO::FETCH_ASSOC);
+                
+                if ($order_item) {
+                    $update_order_item = $conn->prepare("UPDATE order_item SET quantity = quantity + 1 WHERE order_id = ? AND product_id = ?");
+                    $update_order_item->execute([$order_id, $product_id]);
+                } else {
+                    $insert_order_item = $conn->prepare("INSERT INTO order_item (order_id, product_id, price, quantity) VALUES (?, ?, ?, ?)");
+                    $insert_order_item->execute([$order_id, $product_id, $product['price'], 1]);
+                }
+            }
+            
+            $delete_wishlist_item = $conn->prepare("DELETE FROM wishlist_item WHERE id = ?");
+            $delete_wishlist_item->execute([$wishlist_item_id]);
+            
+            header('location:wishlist.php?added_success=true');
+            exit();
+        }
     }
-
-    header('Location: wishlist.php');
-    exit;
 }
-
-// Calculate total price
-$totalPrice = array_sum(array_column($wishlistItems, 'price'));
-
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Your Wishlist</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wishlist</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/wishlist.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+        }
+        .wishlist-container {
+            max-width: 1200px;  
+            margin: 30px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        table {
+            width: 95%;  
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            font-size: 16px;
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background:#2980b9;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .wishlist-item img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        .wishlist-item button {
+            padding: 10px 15px; 
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 15px; 
+            margin-top: 5px;    
+            transition: all 0.3s ease; 
+        }
+        .wishlist-item button:hover {
+            border-radius: 10px; 
+            transform: scale(1.05); 
+        }
+        .delete-btn {
+            background-color: red;
+            color: white;
+        }
+        .add-btn {
+            margin-left: 20px;
+            background-color: green;
+            color: white;
+        }
+        .delete-btn:hover {
+            background-color: rgb(84, 6, 6); 
+        }
+        .clear-all-btn {
+            background: linear-gradient(135deg, #e60000, #c0392b);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            float: right;
+            margin: 10px 0;
+            margin-right: 60px;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+        .clear-all-btn:hover {
+            background: linear-gradient(135deg, #c0392b, #e60000);
+            transform: scale(1.05);
+        }
+        @media (max-width: 768px) {
+            .clear-all-btn {
+                margin-right: 20px;
+                padding: 8px 15px;
+            }
+        }
+        @media (max-width: 480px) {
+            .clear-all-btn {
+                margin-right: 10px;
+                padding: 6px 12px;
+                font-size: 14px;
+            }
+        }
+        .clear-all-btn:hover {
+            background-color: rgb(84, 6, 6); 
+        }
+    </style>
 </head>
 <body>
 
+<?php include 'components/user_header.php'; ?>
+
 <div class="wishlist-container">
-    <div class="wishlist-card">
-        <h3 class="text-center mb-4">Your Wishlist</h3>
-
-        <?php if (count($wishlistItems) > 0): ?>
-            <div class="table-responsive">
-                <table class="table table-bordered text-center wishlist-table">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Product</th>
-                            <th>Image</th>
-                            <th>Price</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($wishlistItems as $index => $item): ?>
-                            <tr>
-                                <td><?php echo $index + 1; ?></td>
-                                <td><?php echo htmlspecialchars($item['product_name'] ?? $item['name']); ?></td>
-                                <td>
-                                    <img src="<?php echo $item['image'] ?? 'images/placeholder.png'; ?>" class="product-image" alt="Product Image">
-                                </td>
-                                <td>$<?php echo number_format($item['price'], 2); ?></td>
-                                <td>
-                                    <form method="POST" class="action-form">
-                                        <button type="submit" name="delete_item" value="<?php echo $item['product_id'] ?? $item['id']; ?>" class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash-alt"></i> Remove
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="total-box">
-                Total Price: <strong>$<?php echo number_format($totalPrice, 2); ?></strong>
-            </div>
-
-        <?php else: ?>
-            <div class="alert alert-warning text-center">
-                <i class="fas fa-heart-broken"></i> Your wishlist is empty!
-            </div>
-        <?php endif; ?>
-
-        <div class="text-center mt-4">
-            <a href="shop.php" class="btn btn-outline-primary">
-                <i class="fas fa-store"></i> Back to Shop
-            </a>
-        </div>
-    </div>
+   
     
+    <button id="deleteAllBtn" class="clear-all-btn">Delete All Items</button>
+
+    <table>
+        <thead>
+            <tr>
+                
+                <th>Product Name</th>
+                <th>Price</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+$select_wishlist = $conn->prepare("SELECT wi.*, p.name, p.price FROM wishlist_item wi JOIN product p ON wi.product_id = p.id WHERE wi.wishlist_id IN (SELECT id FROM wishlist WHERE user_id = ?)");
+$select_wishlist->execute([$user_id]);
+
+                if ($select_wishlist->rowCount() > 0) {
+                    while ($item = $select_wishlist->fetch(PDO::FETCH_ASSOC)) {
+                        echo '<tr class="wishlist-item">';
+                       
+                        echo '<td>' . htmlspecialchars($item['name']) . '</td>';
+                        echo '<td>JD' . htmlspecialchars($item['price']) . '</td>';
+                        echo '<td>';
+                        echo '<form action="" method="POST" style="display:inline-block;" class="delete-form">';
+                        echo '<input type="hidden" name="wishlist_item_id" value="' . $item['id'] . '">';
+                        echo '<button type="submit" name="delete" class="delete-btn">Delete</button>';
+                        echo '</form>';
+                        echo '<form action="" method="POST" style="display:inline-block;">';
+                        echo '<input type="hidden" name="wishlist_item_id" value="' . $item['id'] . '">';
+                        echo '<button type="submit" name="add_to_order" class="add-btn">Add to Order</button>';
+                        echo '</form>';
+                        echo '</td>';
+                        echo '</tr>';
+                    }
+                } else {
+                    echo '<tr><td colspan="4">Your wishlist is empty.</td></tr>';
+                }
+            ?>
+        </tbody>
+    </table>
 </div>
 
+<?php include 'components/footer.php'; ?>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+   $(document).ready(function(){
+      $('#deleteAllBtn').click(function(e){
+         e.preventDefault();
+         Swal.fire({
+            title: 'Are you sure?',
+            text: "This will delete all items from your wishlist.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete all!'
+         }).then((result) => {
+            if (result.isConfirmed) {
+               window.location.href = "wishlist.php?delete_all=true";
+            }
+         });
+      });
+   });
+</script>
+
+<script src="js/script.js"></script>
+
 </body>
 </html>
