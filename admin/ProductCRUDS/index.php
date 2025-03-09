@@ -30,21 +30,22 @@ if (isset($_SESSION['user_id'])) {
     <div class="d-flex">
         <div id="sidebar">
             <button class="btn text-white sidebarHeaderbutton">Dashboard</button>
-            <a href="../UserCRUDS/index.php"><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\man.png" alt=""
-            class="me-1"> Users</button></a>
+            <a href="../UserCRUDS/index.php"><button class="btn CustomSidebarButtons text-white"><img
+                        src="../flaticon\man.png" alt="" class="me-1"> Users</button></a>
             <a href="../CategoryCRUDS\index.php"> <button class="btn CustomSidebarButtons text-white"><img
-            src="../flaticon\categories.png" alt="" class="me-1"> Categories</button></a>
+                        src="../flaticon\categories.png" alt="" class="me-1"> Categories</button></a>
             <a href="#">
-                <button class="btn CustomSidebarButtons text-white"><img src="../flaticon\product.png" alt="" class="me-1">
+                <button class="btn CustomSidebarButtons text-white"><img src="../flaticon\product.png" alt=""
+                        class="me-1">
                     Products</button>
             </a>
-          
-           
-            <a href="../CouponCRUDS"><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\coupon.png" alt=""
-                        class="me-1"> Coupons</button></a>
-            <a href="../OrderRU/index.php"><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\received.png" alt=""
-                        class="me-1"> Orders</button></a>
-        
+
+
+            <a href="../CouponCRUDS"><button class="btn CustomSidebarButtons text-white"><img
+                        src="../flaticon\coupon.png" alt="" class="me-1"> Coupons</button></a>
+            <a href="../OrderRU/index.php"><button class="btn CustomSidebarButtons text-white"><img
+                        src="../flaticon\received.png" alt="" class="me-1"> Orders</button></a>
+
 
         </div>
         <div class="page-content">
@@ -60,16 +61,16 @@ if (isset($_SESSION['user_id'])) {
 
                             <li class="nav-item dropdown">
                                 <a class="nav-link " href="#" role="button" data-bs-toggle="dropdown">
-                                <img src="../flaticon/profile.png" alt="asdfsadf">
+                                    <img src="../flaticon/profile.png" alt="asdfsadf">
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="../components/profile.php"><i class="fa-solid fa-user"></i> Profile</a>
+                                    <li><a class="dropdown-item" href="../components/profile.php"><i
+                                                class="fa-solid fa-user"></i> Profile</a>
                                     </li>
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
-                                    <li><a class="dropdown-item" href="#"><i class="fa-solid fa-right-from-bracket"></i>
-                                            Log out</a></li>
+                                    <li><a href="../components/logout.php?logout=yes" class="logout-btn btn">Log out</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -96,7 +97,7 @@ if (isset($_SESSION['user_id'])) {
                 <div class="container my-5">
                     <h1>Product Information</h1>
                     <!-- FIX: Updated data attributes for Bootstrap 5 -->
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">
                         Add Product
                     </button>
 
@@ -107,7 +108,7 @@ if (isset($_SESSION['user_id'])) {
                         <thead>
                             <tr>
                                 <!-- <th scope="col">id</th> -->
-                                <th class="text-center" scope="col ">Id</th>
+                               
                                 <th class="text-center" scope="col ">name</th>
                                 <th class="text-center" scope="col">price</th>
                                 <th class="text-center" scope="col">description</th>
@@ -126,7 +127,7 @@ if (isset($_SESSION['user_id'])) {
                             // print_r ($users);
                             foreach ($products as $product) {
                                 echo "<tr>
-                  <td class='text-center'>{$product['product_id']}</td>
+              
                   <td class='text-center'>{$product['name']}</td>
                   <td class='text-center'> {$product['price']}</td>
                   <td class='text-center'> {$product['description']}</td>
@@ -136,12 +137,21 @@ if (isset($_SESSION['user_id'])) {
                         <img src='" . (!empty($product['image']) ? '../../images/' . $product['image'] : 'images/default.png') . "' width='100' height='60'>
                     </div>
                   </td>
-                  <td class='text-center'>
-                  <a href='./update_data/update_page.php?id={$product['product_id']}' class='btn btn-sm btn-primary'> Edit</a>
-                  |
-                  <a href='./delete_data/delete_page.php?id={$product['product_id']}' class='btn btn-sm btn-danger'> Delete</a>
-                  </td>
-
+                        <td class='text-center'>
+                        <button type='button' class='btn btn-sm btn-primary' data-bs-toggle='modal' data-bs-target='#editModal' 
+                                data-id='{$product['product_id']}' 
+                                data-name='{$product['name']}' 
+                                data-price='{$product['price']}' 
+                                data-description='{$product['description']}' 
+                                data-category='{$product['category_name']}'>
+                            Edit
+                        </button>
+                        |
+                           <button type='button' class='btn btn-sm btn-danger' data-bs-toggle='modal' data-bs-target='#deleteModal' 
+                                 data-id='{$product['product_id']}'>
+                            Delete
+                        </button>
+                    </td>
                   </tr>";
                             }
                             ?>
@@ -149,8 +159,13 @@ if (isset($_SESSION['user_id'])) {
                     </table>
                 </div>
 
-                <!-- Modal -->
-                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+
+
+                <!-- -------------------------------------------------------------------    ----------------------------------------------------------------------------------- -->
+
+
+                <!-- Add Modal -->
+                <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                     aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
@@ -198,21 +213,124 @@ if (isset($_SESSION['user_id'])) {
                     </div>
                 </div>
             </main>
-
-
-
-
-
-
-
         </div>
     </div>
 
-    <!-- -------------------------------------------------------------------    ----------------------------------------------------------------------------------- -->
+
+    <!-- -------------------------------------------------------------------   add ----------------------------------------------------------------------------------- -->
+
+    <!-- -------------------------------------------------------------------  edit  ----------------------------------------------------------------------------------- -->
+
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Edit Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <form action="update_data/update.php" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="product_id" id="product_id" value="">
+                        <!-- Hidden field for product ID -->
+
+                        <div class="mb-3">
+                            <label for="product_name" class="col-form-label">Name:</label>
+                            <input type="text" class="form-control" id="product_name" name="product_name"
+                                value="<?= $product['name'] ?>">
+                        </div>
+                        <div class="mb-3">
+                            <label for="product_price" class="col-form-label">Price:</label>
+                            <input type="text" class="form-control" id="product_price" name="product_price"
+                                value="<?= $product['product_id'] ?>">
+                        </div>
+                        <div class="mb-3">
+                            <label for="product_description" class="col-form-label">Description:</label>
+                            <input type="text" class="form-control" id="product_description" name="product_description"
+                                value="<?= $product['description'] ?>">
+                        </div>
+                        <div class="mb-3">
+                            <label for="Product_category" class="col-form-label">Category:</label>
+                            <input type="text" class="form-control" id="Product_category" name="Product_category"
+                                value="<?= $product['category_name'] ?>">
+                        </div>
+                        <div class="text-center">
+                            <input type="file" class="form-control" id="product_img" name="product_img">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <input type="submit" class="btn btn-primary" name="update_product" value="Update">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- -------------------------------------------------------------------  edit  ----------------------------------------------------------------------------------- -->
+
+
+    <!-- -------------------------------------------------------------------  delete  ----------------------------------------------------------------------------------- -->
+
+
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Delete Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this product?</p>
+                    <form action="delete_data/delete_page.php" method="post">
+                        <input type="hidden" name="product_id" id="delete_product_id" value="">
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <input type="submit" class="btn btn-danger" name="delete_product" value="Delete">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- -------------------------------------------------------------------  delete  ----------------------------------------------------------------------------------- -->
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+
+
+
+    <script>
+        const editModal = document.getElementById('editModal');
+        editModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget; // Button that triggered the modal
+            const productId = button.getAttribute('data-id');
+            const productName = button.getAttribute('data-name');
+            const productPrice = button.getAttribute('data-price');
+            const productDescription = button.getAttribute('data-description');
+            const productCategory = button.getAttribute('data-category');
+
+            // Populate the modal fields
+            document.getElementById('product_id').value = productId;
+            document.getElementById('product_name').value = productName;
+            document.getElementById('product_price').value = productPrice;
+            document.getElementById('product_description').value = productDescription;
+            document.getElementById('Product_category').value = productCategory;
+        });
+    </script>
+    <script>
+        const deleteModal = document.getElementById('deleteModal');
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget; // Button that triggered the modal
+            const productId = button.getAttribute('data-id'); // Get product ID from button
+
+            // Populate the hidden input field with the product ID
+            document.getElementById('delete_product_id').value = productId;
+        });
+    </script>
+
 </body>
 
 </html>

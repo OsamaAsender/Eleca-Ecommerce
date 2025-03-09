@@ -72,8 +72,7 @@ $coupons = $select_coupons->fetchAll(PDO::FETCH_ASSOC);
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
-                                    <li><a class="dropdown-item" href="../components/logout.php"><i class="fa-solid fa-right-from-bracket"></i>
-                                            Log out</a></li>
+                                    <li><a href="../components/logout.php?logout=yes" class="logout-btn btn">Log out</a></li>
                                 </ul>
                             </li>
                         </ul>

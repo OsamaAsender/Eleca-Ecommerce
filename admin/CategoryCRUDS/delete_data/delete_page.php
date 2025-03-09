@@ -1,19 +1,21 @@
 <?php
-// echo "delete page";
-include('../db_connection/conn.php');
-if(isset($_GET['id'])){
-   $id= $_GET['id'];
-    try{
-        $query="DELETE FROM `category` WHERE `id`=:std_id";
-        $statment=$conn->prepare($query);
-        $statment->bindParam(':std_id',$id);
-        $statment->execute();
-        header('location:../index.php?message=delete sucesssfuly');
+// Include the database connection file
+require_once '../db_connection/conn.php';
 
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_category'])) {
+    $category_id = $_POST['category_id'];
 
+    try {
+        // Delete query
+        $sql = "DELETE FROM category WHERE id = :id";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([':id' => $category_id]);
 
-    }catch(PDOEception $err){
-        echo $err->getMessage();
+        // Redirect or display success message
+        header("Location: ../index.php?message=delete_success");
+        exit;
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
     }
 }
 ?>

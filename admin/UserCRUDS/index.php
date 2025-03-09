@@ -121,8 +121,7 @@ if (isset($_GET['delete'])) {
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
-                                    <li><a class="dropdown-item" href="#"><i class="fa-solid fa-right-from-bracket"></i>
-                                            Log out</a></li>
+                                    <li><a href="../components/logout.php?logout=yes" class="logout-btn btn">Log out</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -170,7 +169,7 @@ if (isset($_GET['delete'])) {
                         <thead>
                             <tr>
                                 <!-- <th scope="col">id</th> -->
-                                <th scope="col" class="text-center">Id</th>
+                               
                                 <th scope="col" class="text-center">Name</th>
                                 <th scope="col" class="text-center">Email</th>
                                 <th scope="col" class="text-center">Phonenumber</th>
@@ -186,7 +185,7 @@ if (isset($_GET['delete'])) {
                             // print_r ($users);
                             foreach ($users as $user) {
                                 echo "<tr>
-                                    <td class='text-center'>{$user['id']}</td>
+                                   
                                     <td class='text-center'>{$user['name']}</td>
                                     <td class='text-center'>{$user['email']}</td>
                                     <td class='text-center'>{$user['phone_number']}</td>

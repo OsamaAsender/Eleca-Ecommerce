@@ -12,9 +12,9 @@ if (!$user_id) {
 
 
 // Ensure the `profile_image` column exists (only runs once if needed)
-$check_column = $conn->query("SHOW COLUMNS FROM `user` LIKE 'profile_image'");
+$check_column = $conn->query("SHOW COLUMNS FROM `user` LIKE 'image'");
 if ($check_column->rowCount() === 0) {
-    $conn->query("ALTER TABLE `user` ADD `profile_image` VARCHAR(255) DEFAULT 'default.png'");
+    $conn->query("ALTER TABLE `user` ADD `image` VARCHAR(255) DEFAULT 'default.png'");
 }
 
 // Fetch user profile
@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $update_image->execute([$new_img_name, $user_id]);
 
             $message[] = 'Profile picture updated!';
-            $fetch_profile['profile_image'] = $new_img_name;  // Update for immediate display
+            $fetch_profile['image'] = $new_img_name;  // Update for immediate display
         } else {
             $message[] = 'Invalid file type! Only JPG, PNG, GIF allowed.';
         }
@@ -122,7 +122,7 @@ $wishlist = $fetch_wishlist->fetchAll(PDO::FETCH_ASSOC);
         <?php endif; ?>
 
         <div class="text-center profile-img">
-            <img src="<?= !empty($fetch_profile['profile_image']) ? 'uploads/' . $fetch_profile['profile_image'] : 'uploads/default.png'; ?>" class="rounded-circle" width="120" height="120">
+            <img src="<?= !empty($fetch_profile['image']) ? 'images' . $fetch_profile['image'] : '/default.png'; ?>" class="rounded-circle" width="120" height="120">
         </div>
         <p><strong>Username:</strong> <?= htmlspecialchars($fetch_profile["name"] ?? 'N/A'); ?></p>
         <p><strong>Email:</strong> <?= htmlspecialchars($fetch_profile["email"] ?? 'N/A'); ?></p>

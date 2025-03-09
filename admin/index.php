@@ -82,8 +82,7 @@ if ($admin_id) {
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
-                                    <li><a class="dropdown-item" href="#"><i class="fa-solid fa-right-from-bracket"></i>
-                                            Log out</a></li>
+                                    <li><a href="../components/logout.php?logout=yes" class="logout-btn btn">Log out</a></li>
                                 </ul>
                             </li>
                         </ul>

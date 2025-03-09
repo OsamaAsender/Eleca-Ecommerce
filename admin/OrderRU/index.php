@@ -67,9 +67,7 @@ if (isset($_SESSION['user_id'])) {
                                         <hr class="dropdown-divider">
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="#"><i class="fa-solid fa-right-from-bracket"></i>
-                                            Log out
-                                        </a>
+                                        <a href="../components/logout.php?logout=yes" class="logout-btn btn">Log out</a>
                                     </li>
                                 </ul>
                             </li>
@@ -109,7 +107,7 @@ if (isset($_SESSION['user_id'])) {
                 <table class="table  table-striped table-hover">
                     <thead class="">
                         <tr>
-                            <th class="text-center">Id</th>
+
                             <th class="text-center">User</th>
                             <th class="text-center">Total Price</th>
                             <th class="text-center">Status</th>
@@ -120,7 +118,6 @@ if (isset($_SESSION['user_id'])) {
                     <tbody>
                         <?php foreach ($orders as $row): ?>
                             <tr>
-                                <td class="text-center"><?= $row['id'] ?></td>
                                 <td class="text-center"><?= htmlspecialchars($row['user_name']) ?></td>
                                 <td class="text-center">$<?= number_format($row['total_price'], 2) ?></td>
                                 <td class="text-center"><?= ucfirst($row['status']) ?></td>
@@ -128,16 +125,25 @@ if (isset($_SESSION['user_id'])) {
                                     <?= $row['coupon_name'] ? htmlspecialchars($row['coupon_name']) : 'N/A' ?>
                                 </td>
                                 <td class="text-center">
-                                    <a href="edit_order.php?id=<?= $row['id'] ?>" class="btn btn-primary btn-sm"> Edit</a>
+                                    <!-- Edit Button -->
+                                    <button type="button" class="btn btn-primary btn-sm edit-btn" data-bs-toggle="modal"
+                                        data-bs-target="#editStatusModal" data-id="<?= $row['id'] ?>"
+                                        data-status="<?= htmlspecialchars($row['status']) ?>">
+                                        <!-- Added htmlspecialchars for security -->
+                                        Edit
+                                    </button>
+
                                     |
-                                    <a href="update_order.php?id=<?= $row['id'] ?>" class="btn btn-danger btn-sm">
-                                        Delete</a>
-                                    |
-                                    <a href="update_order.php?id=<?= $row['id'] ?>" class="btn btn-success btn-sm"><i
-                                            class='fa-solid'></i> Details</a>
+
+                                    <!-- Details Button -->
+                                    <a href="order_details.php?order_id=<?= $row['id'] ?>" class="btn btn-success btn-sm">
+                                     Details
+                                    </a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
+
+
                     </tbody>
                 </table>
             </div>
@@ -146,31 +152,127 @@ if (isset($_SESSION['user_id'])) {
     </div>
 
 
-
-    <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#OrderDetails">
-        details
-    </button>
-
-    <!-- Modal -->
-    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <!-- Edit Status Modal -->
+    <div class="modal fade" id="editStatusModal" tabindex="-1" aria-labelledby="editStatusModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                    <h5 class="modal-title" id="editStatusModalLabel">Edit Order Status</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    ...
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Understood</button>
+                    <form id="editStatusForm" method="post" action="update_status.php">
+                        <input type="hidden" id="orderId" name="order_id">
+
+                        <div class="mb-3">
+                            <label for="orderStatus" class="form-label">Order Status</label>
+                            <select class="form-select" id="orderStatus" name="status" required>
+                                <option value="pending">Pending</option>
+                                <option value="process">Process</option>
+                                <option value="delivered">Delivered</option>
+                            </select>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const editButtons = document.querySelectorAll(".edit-btn");
+            const orderIdField = document.getElementById("orderId");
+            const orderStatusField = document.getElementById("orderStatus");
+
+            editButtons.forEach(button => {
+                button.addEventListener("click", function () {
+                    const orderId = this.getAttribute("data-id");
+                    const orderStatus = this.getAttribute("data-status");
+
+                    // Pre-fill the modal fields
+                    orderIdField.value = orderId;
+                    orderStatusField.value = orderStatus;
+
+                    // Show the modal
+                    const modal = new bootstrap.Modal(document.getElementById("editStatusModal"));
+                    modal.show();
+                });
+            });
+        });
+    </script>
+
+
+
+
+
+    <!-- Details Modal -->
+    <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detailsModalLabel">Order Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul id="orderDetailsList" class="list-group">
+                        <!-- Products will be dynamically loaded here -->
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const detailButtons = document.querySelectorAll(".details-btn");
+
+            detailButtons.forEach(button => {
+                button.addEventListener("click", function () {
+                    const orderId = this.getAttribute("data-id");
+
+                    // Make an AJAX call to fetch order details
+                    fetch(`fetch_order_details.php?order_id=${orderId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const orderDetailsList = document.getElementById("orderDetailsList");
+                            orderDetailsList.innerHTML = ""; // Clear previous data
+
+                            if (data.length > 0) {
+                                data.forEach(product => {
+                                    const listItem = document.createElement("li");
+                                    listItem.className = "list-group-item";
+                                    listItem.textContent = `${product.name} - Quantity: ${product.quantity}`;
+                                    orderDetailsList.appendChild(listItem);
+                                });
+                            } else {
+                                const listItem = document.createElement("li");
+                                listItem.className = "list-group-item text-center";
+                                listItem.textContent = "No products found for this order.";
+                                orderDetailsList.appendChild(listItem);
+                            }
+
+                            // Show the modal
+                            const modal = new bootstrap.Modal(document.getElementById("detailsModal"));
+                            modal.show();
+                        })
+                        .catch(error => {
+                            console.error("Error fetching order details:", error);
+                        });
+                });
+            });
+        });
+    </script>
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"

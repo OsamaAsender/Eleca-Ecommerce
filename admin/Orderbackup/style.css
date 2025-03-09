@@ -1,0 +1,46 @@
+ul{
+    list-style-type: none;
+}
+#sidebar{
+    #sidebar {
+        position: fixed; /* Fix sidebar to the left */
+        top: 0;
+        left: 0;
+        overflow-y: auto; /* Add scrolling if content exceeds viewport */
+    }
+    
+}
+
+.page-content {
+    margin-left: 15%; /* Leaves space for the sidebar */
+    width: 85%; /* Aligns with the 'nav' width */
+}
+
+.CustomSidebarButtons{
+    width: 100%;
+    padding: 1rem;
+    text-align: start;
+    border-radius: 0;
+    font-weight: 500;
+}
+.CustomSidebarButtons:hover{
+    background-color: #263b5f;
+}
+.sidebarHeaderbutton{
+    width: 100%;
+    padding: 1rem;
+    font-size: 2rem;
+    border-radius: 0;
+    font-weight: 500;
+}
+nav{
+    width: 85vw;
+}
+.navbarStart{
+
+}
+
+.navbarEnd{
+    margin: 1rem;
+    width: 3rem;    
+}
