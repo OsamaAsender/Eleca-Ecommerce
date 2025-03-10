@@ -4,11 +4,19 @@ session_start();
 
 if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
+    
 } else {
     $user_id = '';
 }
 
+
+
+
 $message = []; // Ensure $message is always an array
+
+
+include 'components/connect.php';
+
 
 if (isset($_POST['submit'])) {
     $email = trim($_POST['email']);
@@ -30,7 +38,6 @@ if (isset($_POST['submit'])) {
 
     // Only proceed if there are no validation errors
     if (empty($message)) {
-        // Update the table name to 'user' (from 'users')
         $select_user = $conn->prepare("SELECT * FROM `user` WHERE email = ?");
         $select_user->execute([$email]);
         $row = $select_user->fetch(PDO::FETCH_ASSOC);
@@ -40,7 +47,13 @@ if (isset($_POST['submit'])) {
             if (password_verify($pass, $row['password'])) {
                 $_SESSION['user_id'] = $row['id'];
                 $_SESSION['role'] = $row['role']; // Store role for role-based access
-                header('location: home.php');
+
+                // Role-based redirection
+                if ($row['role'] === 'admin' || $row['role'] === 'super admin') {
+                    header('Location: admin/index.php');
+                } else {
+                    header('Location: home.php');
+                }
                 exit();
             } else {
                 $message[] = '<p style="color: red;">Incorrect password!</p>';
@@ -51,6 +64,7 @@ if (isset($_POST['submit'])) {
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

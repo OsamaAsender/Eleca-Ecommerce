@@ -38,6 +38,7 @@ if (isset($_POST['submit'])) {
         $message[] = '<p style="color: red;">Phone number is required!</p>';
     } elseif (!preg_match("/^[0-9]{10,15}$/", $phone_number)) {
         $message[] = '<p style="color: red;">Invalid phone number format! (Only numbers allowed, length 10-15)</p>';
+        $messages[] = '<p style="color: red;">Invalid phone number format! (Only numbers allowed, length 10-15)</p>';
     }
 
     // Validate Password
@@ -64,6 +65,7 @@ if (isset($_POST['submit'])) {
 
         if ($select_user->rowCount() > 0) {
             $message[] = '<p style="color: red;">Email already exists!</p>';
+            //echo
         } else {
             // Hash the password
             $hashed_pass = password_hash($pass, PASSWORD_DEFAULT);
@@ -117,7 +119,7 @@ if (isset($_POST['submit'])) {
         // Ensure that $message is always an array and not a string
         if (is_array($message) && !empty($message)) {
             foreach ($message as $msg) {
-                echo '<p class="error-msg">' . htmlspecialchars($msg) . '</p>';
+                echo '<p class="error-msg">' . $msg . '</p>';
             }
         }
         ?>

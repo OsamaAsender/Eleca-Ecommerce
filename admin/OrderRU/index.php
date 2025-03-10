@@ -1,282 +1,300 @@
 <?php
 session_start();
-
-if (isset($_SESSION['user_id'])) {
-    $user_id = $_SESSION['user_id'];
-    // echo $user_id;   
-} else {
+if (!isset($_SESSION['user_id'])) {
     header('location:user_login.php');
     exit();
 }
+$user_id = $_SESSION['user_id'];
 
+include('../components/connect.php');
+
+// Handle form submissions
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['delete_order'])) {
+        $order_id = $_POST['order_id'];
+        try {
+            $conn->beginTransaction();
+            
+            // Delete order items first
+            $stmt = $conn->prepare("DELETE FROM order_item WHERE order_id = ?");
+            $stmt->execute([$order_id]);
+            
+            // Then delete the order
+            $stmt = $conn->prepare("DELETE FROM `order` WHERE id = ?");
+            $stmt->execute([$order_id]);
+            
+            $conn->commit();
+            $_SESSION['message'] = "Order deleted successfully!";
+        } catch (PDOException $e) {
+            $conn->rollBack();
+            $_SESSION['error'] = "Error deleting order: " . $e->getMessage();
+        }
+        header("Location: orders.php");
+        exit();
+    }
+
+    if (isset($_POST['update_order'])) {
+        $order_id = $_POST['order_id'];
+        $status = $_POST['status'];
+        try {
+            $stmt = $conn->prepare("UPDATE `order` SET status = ? WHERE id = ?");
+            $stmt->execute([$status, $order_id]);
+            $_SESSION['message'] = "Order status updated successfully!";
+        } catch (PDOException $e) {
+            $_SESSION['error'] = "Error updating order: " . $e->getMessage();
+        }
+        header("Location: orders.php");
+        exit();
+    }
+}
+
+// Fetch orders
+$query = "SELECT o.id, u.name AS user_name, o.total_price, o.status, c.name AS coupon_name 
+          FROM `order` o
+          LEFT JOIN `user` u ON o.user_id = u.id
+          LEFT JOIN `coupon` c ON o.coupon_id = c.id
+          ORDER BY o.id DESC";
+$stmt = $conn->prepare($query);
+$stmt->execute();
+$orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="style.css">
-    <title>admin dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <title>Orders Management</title>
+    <style>
+        .order-status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+        }
+        .status-pending { background-color: #fff3cd; color: #856404; }
+        .status-processing { background-color: #cce5ff; color: #004085; }
+        .status-completed { background-color: #d4edda; color: #155724; }
+        .status-cancelled { background-color: #f8d7da; color: #721c24; }
+    </style>
 </head>
-
 <body>
     <div class="d-flex">
-        <div id="sidebar">
-            <button class="btn text-white sidebarHeaderbutton">Dashboard</button>
-            <a href="../UserCRUDS/index.php"><button class="btn CustomSidebarButtons text-white"><img
-                        src="../flaticon\man.png" alt="" class="me-1"> Users</button></a>
-            <a href="../CategoryCRUDS/index.php"> <button class="btn CustomSidebarButtons text-white"><img
-                        src="../flaticon\categories.png" alt="" class="me-1"> Categories</button></a>
-            <a href="../ProductCRUDS/index.php">
-                <button class="btn CustomSidebarButtons text-white"><img src="../flaticon\product.png" alt=""
-                        class="me-1"> Products</button></a>
-            <a href="../CouponCRUDS/index.php"><button class="btn CustomSidebarButtons text-white"><img
-                        src="../flaticon\coupon.png" alt="" class="me-1"> Coupons</button></a>
-            <a href="#"><button class="btn CustomSidebarButtons text-white"><img src="../flaticon\received.png" alt=""
-                        class="me-1"> Orders</button></a>
+        <!-- Your existing sidebar code -->
 
+        <div class="page-content w-100">
+            <!-- Your existing navbar code -->
 
-        </div>
-        <div class="page-content">
-            <nav class="navbar navbar-expand-lg bg-body-tertiary">
-                <div class="container-fluid d-flex justify-content-between">
-                    <div class="d-flex">
-                        <button class="btn fw-bold">ELECA SHOP</button>
+            <div class="container mt-4">
+                <?php if (isset($_SESSION['message'])) : ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <?= htmlspecialchars($_SESSION['message']) ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
+                    <?php unset($_SESSION['message']); ?>
+                <?php endif; ?>
 
-
-                    <div class="me-5 pe-4">
-                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li class="nav-item dropdown">
-                                <a class="nav-link " href="#" role="button" data-bs-toggle="dropdown">
-                                    <img src="../flaticon/profile.png" alt="asdfsadf">
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <a href="../components/profile.php" class="dropdown-item" href="#"><i
-                                                class="fa-solid fa-user"></i> Profile</a>
-                                    </li>
-                                    <li>
-                                        <hr class="dropdown-divider">
-                                    </li>
-                                    <li>
-                                        <a href="../components/logout.php?logout=yes" class="logout-btn btn">Log out</a>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-
+                <?php if (isset($_SESSION['error'])) : ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <?= htmlspecialchars($_SESSION['error']) ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
+                    <?php unset($_SESSION['error']); ?>
+                <?php endif; ?>
 
-                </div>
-
-            </nav>
-
-            <?php
-
-            include('../components/connect.php');
-
-            if (isset($_GET['message'])) {
-                echo "<div style='background-color:green'> {$_GET['message']}</div>";
-            }
-            ?>
-
-
-            <?php
-
-            include '../components/connect.php';
-
-            // Fetch orders from database using PDO
-            $query = "SELECT o.id, u.name AS user_name, o.total_price, o.status, c.name AS coupon_name FROM `order` o
-          LEFT JOIN `user` u ON o.user_id = u.id
-          LEFT JOIN `coupon` c ON o.coupon_id = c.id
-          ORDER BY o.id DESC";
-            $stmt = $conn->prepare($query);
-            $stmt->execute();
-            $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            ?>
-            <div class="container mt-5">
-                <h2 class="mb-4">Orders Management</h2>
-                <table class="table  table-striped table-hover">
-                    <thead class="">
-                        <tr>
-
-                            <th class="text-center">User</th>
-                            <th class="text-center">Total Price</th>
-                            <th class="text-center">Status</th>
-                            <th class="text-center">Coupon</th>
-                            <th class="text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($orders as $row): ?>
-                            <tr>
-                                <td class="text-center"><?= htmlspecialchars($row['user_name']) ?></td>
-                                <td class="text-center">$<?= number_format($row['total_price'], 2) ?></td>
-                                <td class="text-center"><?= ucfirst($row['status']) ?></td>
-                                <td class="text-center">
-                                    <?= $row['coupon_name'] ? htmlspecialchars($row['coupon_name']) : 'N/A' ?>
-                                </td>
-                                <td class="text-center">
-                                    <!-- Edit Button -->
-                                    <button type="button" class="btn btn-primary btn-sm edit-btn" data-bs-toggle="modal"
-                                        data-bs-target="#editStatusModal" data-id="<?= $row['id'] ?>"
-                                        data-status="<?= htmlspecialchars($row['status']) ?>">
-                                        <!-- Added htmlspecialchars for security -->
-                                        Edit
-                                    </button>
-
-                                    |
-
-                                    <!-- Details Button -->
-                                    <a href="order_details.php?order_id=<?= $row['id'] ?>" class="btn btn-success btn-sm">
-                                     Details
-                                    </a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-
-
-                    </tbody>
-                </table>
-            </div>
-
-        </div>
-    </div>
-
-
-    <!-- Edit Status Modal -->
-    <div class="modal fade" id="editStatusModal" tabindex="-1" aria-labelledby="editStatusModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editStatusModalLabel">Edit Order Status</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editStatusForm" method="post" action="update_status.php">
-                        <input type="hidden" id="orderId" name="order_id">
-
-                        <div class="mb-3">
-                            <label for="orderStatus" class="form-label">Order Status</label>
-                            <select class="form-select" id="orderStatus" name="status" required>
-                                <option value="pending">Pending</option>
-                                <option value="process">Process</option>
-                                <option value="delivered">Delivered</option>
-                            </select>
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Orders Management</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>User</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                        <th>Coupon</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($orders as $order): ?>
+                                        <tr>
+                                            <td>#<?= $order['id'] ?></td>
+                                            <td><?= htmlspecialchars($order['user_name']) ?></td>
+                                            <td>$<?= number_format($order['total_price'], 2) ?></td>
+                                            <td>
+                                                <span class="order-status status-<?= $order['status'] ?>">
+                                                    <?= ucfirst($order['status']) ?>
+                                                </span>
+                                            </td>
+                                            <td><?= $order['coupon_name'] ? htmlspecialchars($order['coupon_name']) : 'None' ?></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary details-btn" 
+                                                        data-id="<?= $order['id'] ?>">
+                                                    <i class="fas fa-info-circle"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-success edit-btn" 
+                                                        data-id="<?= $order['id'] ?>"
+                                                        data-status="<?= $order['status'] ?>">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger delete-btn" 
+                                                        data-id="<?= $order['id'] ?>">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
                         </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const editButtons = document.querySelectorAll(".edit-btn");
-            const orderIdField = document.getElementById("orderId");
-            const orderStatusField = document.getElementById("orderStatus");
-
-            editButtons.forEach(button => {
-                button.addEventListener("click", function () {
-                    const orderId = this.getAttribute("data-id");
-                    const orderStatus = this.getAttribute("data-status");
-
-                    // Pre-fill the modal fields
-                    orderIdField.value = orderId;
-                    orderStatusField.value = orderStatus;
-
-                    // Show the modal
-                    const modal = new bootstrap.Modal(document.getElementById("editStatusModal"));
-                    modal.show();
-                });
-            });
-        });
-    </script>
-
-
-
-
 
     <!-- Details Modal -->
-    <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+    <div class="modal fade" id="detailsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="detailsModalLabel">Order Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Order Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <ul id="orderDetailsList" class="list-group">
-                        <!-- Products will be dynamically loaded here -->
-                    </ul>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <div id="orderItems" class="mb-3"></div>
+                    <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded">
+                        <h5 class="mb-0">Total Amount:</h5>
+                        <h4 class="mb-0 text-success" id="orderTotal"></h4>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Edit Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST">
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title">Update Order Status</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="order_id" id="editOrderId">
+                        <div class="mb-3">
+                            <label class="form-label">Select Status</label>
+                            <select name="status" class="form-select" id="editStatus" required>
+                                <option value="pending">Pending</option>
+                                <option value="processing">Processing</option>
+                                <option value="completed">Completed</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" name="update_order" class="btn btn-success">Update Status</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title">Confirm Deletion</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="order_id" id="deleteOrderId">
+                        <p class="lead">Are you sure you want to delete this order? This action cannot be undone.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" name="delete_order" class="btn btn-danger">Delete Permanently</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const detailButtons = document.querySelectorAll(".details-btn");
+        // Details Modal
+    document.querySelectorAll('.details-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+        const orderId = btn.dataset.id;
+        const modal = new bootstrap.Modal('#detailsModal');
+        const itemsContainer = document.getElementById('orderItems');
+        const totalElement = document.getElementById('orderTotal');
 
-            detailButtons.forEach(button => {
-                button.addEventListener("click", function () {
-                    const orderId = this.getAttribute("data-id");
+        try {
+            itemsContainer.innerHTML = '<div class="text-center">Loading...</div>';
+            
+            const response = await fetch(`get_order_details.php?order_id=${orderId}`);
+            const data = await response.json();
+            
+            if (!data.success) {
+                throw new Error(data.error);
+            }
 
-                    // Make an AJAX call to fetch order details
-                    fetch(`fetch_order_details.php?order_id=${orderId}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            const orderDetailsList = document.getElementById("orderDetailsList");
-                            orderDetailsList.innerHTML = ""; // Clear previous data
+            if (data.items.length === 0) {
+                itemsContainer.innerHTML = '<div class="text-center text-muted">No items found</div>';
+            } else {
+                itemsContainer.innerHTML = data.items.map(item => `
+                    <div class="card mb-2">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">${item.product_name}</h6>
+                                <small class="text-muted">Price: $${item.price}</small>
+                            </div>
+                            <div>
+                                <span class="badge bg-primary rounded-pill">Qty: ${item.quantity}</span>
+                                <span class="ms-2 fw-bold">$${(item.price * item.quantity).toFixed(2)}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
 
-                            if (data.length > 0) {
-                                data.forEach(product => {
-                                    const listItem = document.createElement("li");
-                                    listItem.className = "list-group-item";
-                                    listItem.textContent = `${product.name} - Quantity: ${product.quantity}`;
-                                    orderDetailsList.appendChild(listItem);
-                                });
-                            } else {
-                                const listItem = document.createElement("li");
-                                listItem.className = "list-group-item text-center";
-                                listItem.textContent = "No products found for this order.";
-                                orderDetailsList.appendChild(listItem);
-                            }
+            totalElement.textContent = data.total.toFixed(2);
+            modal.show();
 
-                            // Show the modal
-                            const modal = new bootstrap.Modal(document.getElementById("detailsModal"));
-                            modal.show();
-                        })
-                        .catch(error => {
-                            console.error("Error fetching order details:", error);
-                        });
-                });
+        } catch (error) {
+            console.error('Error:', error);
+            itemsContainer.innerHTML = `<div class="alert alert-danger">${error.message}</div>`;
+            totalElement.textContent = '0.00';
+        }
+    });
+});
+
+        // Edit Modal
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.getElementById('editOrderId').value = btn.dataset.id;
+                document.getElementById('editStatus').value = btn.dataset.status;
+                new bootstrap.Modal('#editModal').show();
+            });
+        });
+
+        // Delete Modal
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.getElementById('deleteOrderId').value = btn.dataset.id;
+                new bootstrap.Modal('#deleteModal').show();
             });
         });
     </script>
-
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
 </body>
-
 </html>

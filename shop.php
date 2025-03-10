@@ -301,19 +301,15 @@ if(isset($_POST['add_to_order'])){
 <?php include 'components/user_header.php';?>
 
 
-<!-- قسم تصنيف المنتجات حسب الفئة -->
 <section class="categories container">
    <h1 class="heading">Categories</h1>
    <div class="category-buttons">
-      <!-- زر عرض جميع المنتجات -->
       <a href="shop.php" class="category-btn <?= (!isset($_GET['category_id'])) ? 'active' : ''; ?>">All Items</a>
       <?php
-         // استعلام للحصول على جميع الفئات
          $select_categories = $conn->prepare("SELECT * FROM category");
          $select_categories->execute();
          while ($fetch_category = $select_categories->fetch(PDO::FETCH_ASSOC)) {
       ?>
-      <!-- عرض زر لكل فئة من الفئات -->
       <a href="shop.php?category_id=<?= $fetch_category['id']; ?>" class="category-btn <?= (isset($_GET['category_id']) && $_GET['category_id'] == $fetch_category['id']) ? 'active' : ''; ?>">
          <?= $fetch_category['name']; ?>
       </a>
@@ -321,34 +317,30 @@ if(isset($_POST['add_to_order'])){
    </div>
 </section>
 
-<!-- قسم عرض المنتجات -->
 <section class="products container">
    <h2 class="heading">Products</h2>
    <div class="box1-container" >
       <?php
-         // التحقق من فئة المنتجات المختارة
          $category_id = isset($_GET['category_id']) ? $_GET['category_id'] : '';
 
-         // إذا كانت هناك فئة مختارة، عرض المنتجات ضمن هذه الفئة فقط
          if ($category_id) {
             $select_products = $conn->prepare("SELECT * FROM product WHERE category_id = ?");
             $select_products->execute([$category_id]);
          } else {
-            // عرض جميع المنتجات
             $select_products = $conn->prepare("SELECT * FROM product");
             $select_products->execute();
          }
 
-         // عرض كل منتج
          while ($fetch_product = $select_products->fetch(PDO::FETCH_ASSOC)) {
+            // print_r($fetch_product['image'] );//product1741591508.jpg
       ?>
+      <!-- print_ -->
       <div class="product-box1" style="width: 350px;">
       <a href="single.php?id=<?= $fetch_product['id']; ?>" class="product-link">
-         <img src="admin/ProductCRUDS/images/<?= $fetch_product['image'] ?: 'default_product.png'; ?>" style="width:auto;height:auto" alt="Product Image">
+         <img src="./images/<?= $fetch_product['image'] ?: 'default_product.png'; ?>" style="width:200px;height:200px" alt="Product Image">
          <div class="name"> <?= $fetch_product['name']; ?> </div>
          <p>Price: JD <?= $fetch_product['price']; ?></p>
          </a>
-         <!-- نموذج لإضافة المنتج إلى قائمة الرغبات أو الطلب -->
          <form action="" method="post">
             <input type="hidden" name="pid" value="<?= $fetch_product['id']; ?>">
             <button type="submit" name="add_to_wishlist" class="wishlist-btn"><i class="fa-regular fa-heart"></i> Add to Wishlist</button>
@@ -361,7 +353,6 @@ if(isset($_POST['add_to_order'])){
 
 
 
-<!-- سكربت التعامل مع زر إضافة المنتج إلى قائمة الرغبات والطلب -->
 <script>
    $(document).ready(function() {
       $(".wishlist-btn").click(function(e) {
@@ -376,7 +367,6 @@ if(isset($_POST['add_to_order'])){
                pid: pid
             },
             success: function(response) {
-               // إذا تم إضافة المنتج بنجاح إلى قائمة الرغبات
                if (response === 'Product already exists in your wishlist') {
                   Swal.fire({
                      icon: 'warning',
@@ -412,7 +402,6 @@ if(isset($_POST['add_to_order'])){
                pid: pid
             },
             success: function(response) {
-               // إذا تم إضافة المنتج بنجاح إلى الطلب
                if (response === 'Product already exists in your order') {
                   Swal.fire({
                      icon: 'warning',

@@ -25,18 +25,32 @@ $stmt = $conn->prepare("SELECT * FROM product WHERE id = ?");
 $stmt->execute([$product_id]);
 $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Fetch product images
-$stmt_images = $conn->prepare("SELECT image FROM product WHERE id = ?");
-$stmt_images->execute([$product_id]);
-$images = $stmt_images->fetchAll(PDO::FETCH_COLUMN);
+// Ensure product_id is set (e.g., from GET or POST request)
+$product_id = $_GET['id'] ?? null;
 
-if (!$product) {
-    die("Product not found.");
+if (!$product_id) {
+    die("Product ID is missing.");
 }
 
-if (!$images) {
-    $images = ['https://placehold.co/600x600'];  // Placeholder image
+// Fetch product details including image
+$stmt = $conn->prepare("SELECT image FROM product WHERE id = ?");
+$stmt->execute([$product_id]);
+$image = $stmt->fetchColumn(); // Fetch a single column value
+
+// Determine the image path
+if ($image) {
+    $imagePath = "images/" . htmlspecialchars($image, ENT_QUOTES, 'UTF-8'); // Prevent XSS
+} else {
+    $imagePath = "images/default-image.jpg"; // Fallback image
 }
+
+// If product not found, show an error
+if (!$image) {
+    $imagePath = "https://placehold.co/600x600"; // Placeholder image URL
+}
+
+
+
 
 // Add product to order
 if (isset($_POST['add_to_cart'])) {
@@ -86,6 +100,7 @@ if (isset($_POST['add_to_cart'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <title><?php echo htmlspecialchars($product['name']); ?></title>
 
     <style>
@@ -254,13 +269,14 @@ if (isset($_POST['add_to_cart'])) {
     <div class="product-container">
         <div class="image-gallery">
             <div class="main-image">
-                <img id="mainImage" src="<?php echo htmlspecialchars($images[0]); ?>" alt="Product Image">
+            <img src="<?php echo htmlspecialchars(($image ? 'images/' . $image : 'images/default-image.jpg'), ENT_QUOTES, 'UTF-8'); ?>" >
             </div>
             <div class="thumbnail-container">
-                <?php foreach ($images as $image): ?>
-                    <img src="<?php echo htmlspecialchars($image); ?>" alt="Thumbnail" onclick="changeMainImage(this)">
-                <?php endforeach; ?>
-            </div>
+    <img src="<?php echo htmlspecialchars(($image ? 'images/' . $image : 'images/default-image.jpg'), ENT_QUOTES, 'UTF-8'); ?>" 
+         alt="Thumbnail" 
+         onclick="changeMainImage(this)">
+</div>
+
         </div>
 
         <div class="product-info">
@@ -269,8 +285,13 @@ if (isset($_POST['add_to_cart'])) {
             <div class="product-price">$<?php echo number_format($product['price'], 2); ?></div>
             <form method="POST">
                 <input class="quantity-input" type="number" name="quantity" value="1" min="1" required>
+                <br>
                 <button type="submit" name="add_to_cart" class="add-to-cart-btn">Add to Order</button>
+
             </form>
+            <a href="shop.php">
+            <button class="btn btn-secondary mt-3" >back</button>
+            </a>
         </div>
     </div>
 

@@ -93,7 +93,7 @@ if (isset($_GET['delete'])) {
 
 
         </div>
-        <div class="page-content">
+        <div class="page-content container">
 
 
 
@@ -180,7 +180,7 @@ if (isset($_GET['delete'])) {
                         </thead>
                         <tbody>
                             <?php
-                            $query = "SELECT * FROM `user`";
+                            $query = "SELECT * FROM `user` ORDER BY id desc";
                             $users = $conn->query($query);
                             // print_r ($users);
                             foreach ($users as $user) {

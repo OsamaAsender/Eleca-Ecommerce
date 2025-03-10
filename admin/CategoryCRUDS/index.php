@@ -118,7 +118,7 @@ if (isset($_POST['update_category'])) {
                     <table class="table table-striped table-hover ">
                         <thead>
                             <tr>
-                                <th scope="col" class="text-center">Id</th>
+                                
                                 <th scope="col" class="text-center">name</th>
                                 <th scope="col" class="text-center">image</th>
                                 <th class="text-center">Action</th>
@@ -130,7 +130,7 @@ if (isset($_POST['update_category'])) {
                             $categories = $conn->query($query);
                             foreach ($categories as $category) {
                                 echo "<tr>
-                                    <td class='text-center'>{$category['id']}</td>
+                                    
                                     <td class='text-center'>{$category['name']}</td>
                                     <td class='text-center'>
                                         <img src='" . (!empty($category['image']) ? 'images/' . $category['image'] : 'images/default.png') . "' width='100' height='60'>
